@@ -20,7 +20,7 @@ class FacturaFactory extends Factory
     public function definition(): array
     {
         return [
-            'fecha' => fake()->dateTimeBetween('-1 month', 'now'),
+            'fecha' => fake()->date(),
             'cliente_id' => Cliente::factory(),
             'usuario_id' => Usuario::factory(),
         ];

@@ -28,36 +28,40 @@ class UsuarioFactory extends Factory
             'apellido' => fake()->lastName(),
             'correo' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'rol' => 'Cajero',
+            'rol' => fake()->randomElement(Usuario::ROLES),
             'estado' => 'Activo',
         ];
     }
 
+    /**
+     * Usuario con rol Administrador.
+     */
     public function administrador(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'rol' => 'Administrador',
-        ]);
+        return $this->state(fn (array $attributes) => ['rol' => 'Administrador']);
     }
 
+    /**
+     * Usuario con rol Cajero.
+     */
     public function cajero(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'rol' => 'Cajero',
-        ]);
+        return $this->state(fn (array $attributes) => ['rol' => 'Cajero']);
     }
 
+    /**
+     * Usuario con rol Inventario.
+     */
     public function inventario(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'rol' => 'Inventario',
-        ]);
+        return $this->state(fn (array $attributes) => ['rol' => 'Inventario']);
     }
 
+    /**
+     * Usuario con estado Inactivo.
+     */
     public function inactivo(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'estado' => 'Inactivo',
-        ]);
+        return $this->state(fn (array $attributes) => ['estado' => 'Inactivo']);
     }
 }

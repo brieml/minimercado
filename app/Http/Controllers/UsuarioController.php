@@ -3,89 +3,73 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class UsuarioController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
     {
-        $usuarios = Usuario::query()
-            ->when(
-                $request->string('buscar')->toString(),
-                fn ($query, $buscar) => $query->where(fn ($q) => $q
-                    ->where('nombre', 'like', "%{$buscar}%")
-                    ->orWhere('apellido', 'like', "%{$buscar}%")
-                    ->orWhere('correo', 'like', "%{$buscar}%"))
-            )
-            ->orderBy('nombre')
-            ->paginate(10)
-            ->withQueryString();
+        $usuarios = Usuario::all();
 
         return view('usuarios.index', compact('usuarios'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create(): View
     {
-        return view('usuarios.create');
+        $roles = Usuario::ROLES;
+        $estados = Usuario::ESTADOS;
+
+        return view('usuarios.create', compact('roles', 'estados'));
     }
 
-    public function store(Request $request): RedirectResponse
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'],
-            'correo' => ['required', 'email', 'max:150', 'unique:usuarios,correo'],
-            'password' => ['required', 'string', 'min:8'],
-            'rol' => ['required', Rule::in(['Administrador', 'Cajero', 'Inventario'])],
-            'estado' => ['required', Rule::in(['Activo', 'Inactivo'])],
-        ]);
-
-        $validated['password'] = Hash::make($validated['password']);
-
-        Usuario::create($validated);
-
-        return redirect()->route('usuarios.index')->with('status', 'Usuario creado correctamente.');
+        //
     }
 
-    public function edit(Usuario $usuario): View
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        return view('usuarios.edit', compact('usuario'));
+        //
     }
 
-    public function update(Request $request, Usuario $usuario): RedirectResponse
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id): View
     {
-        abort_if($usuario->is(auth()->user()) && $request->input('estado') !== 'Activo', 403, 'No puedes desactivar tu propio usuario.');
+        $usuario = Usuario::findOrFail($id);
+        $roles = Usuario::ROLES;
+        $estados = Usuario::ESTADOS;
 
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'],
-            'correo' => ['required', 'email', 'max:150', 'unique:usuarios,correo,'.$usuario->id],
-            'password' => ['nullable', 'string', 'min:8'],
-            'rol' => ['required', Rule::in(['Administrador', 'Cajero', 'Inventario'])],
-            'estado' => ['required', Rule::in(['Activo', 'Inactivo'])],
-        ]);
-
-        if (empty($validated['password'])) {
-            unset($validated['password']);
-        } else {
-            $validated['password'] = Hash::make($validated['password']);
-        }
-
-        $usuario->update($validated);
-
-        return redirect()->route('usuarios.index')->with('status', 'Usuario actualizado correctamente.');
+        return view('usuarios.edit', compact('usuario', 'roles', 'estados'));
     }
 
-    public function destroy(Usuario $usuario): RedirectResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        abort_if($usuario->is(auth()->user()), 403, 'No puedes eliminar tu propio usuario.');
+        //
+    }
 
-        $usuario->delete();
-
-        return redirect()->route('usuarios.index')->with('status', 'Usuario eliminado correctamente.');
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }

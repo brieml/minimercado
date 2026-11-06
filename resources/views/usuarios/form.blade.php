@@ -1,50 +1,19 @@
-@php $esEdicion = isset($usuario); @endphp
+<div class="grid gap-5 sm:grid-cols-2">
+    <x-form.input name="nombre" label="Nombre" :value="$usuario->nombre ?? null" maxlength="100" required />
 
-<div class="grid grid-cols-2 gap-4">
-    <flux:input
-        name="nombre"
-        label="Nombre"
-        value="{{ old('nombre', $usuario->nombre ?? '') }}"
-        required
-        autofocus
-    />
+    <x-form.input name="apellido" label="Apellido" :value="$usuario->apellido ?? null" maxlength="100" required />
 
-    <flux:input
-        name="apellido"
-        label="Apellido"
-        value="{{ old('apellido', $usuario->apellido ?? '') }}"
-        required
-    />
-</div>
+    <div class="sm:col-span-2">
+        <x-form.input name="correo" label="Correo electrónico" type="email" :value="$usuario->correo ?? null" maxlength="150" required />
+    </div>
 
-<flux:input
-    name="correo"
-    type="email"
-    label="Correo electrónico"
-    placeholder="ejemplo@minimercado.com"
-    value="{{ old('correo', $usuario->correo ?? '') }}"
-    required
-/>
+    <div class="sm:col-span-2">
+        <x-form.input name="password" label="Contraseña" type="password" autocomplete="new-password"
+            :required="! isset($usuario)"
+            :help="isset($usuario) ? 'Déjala en blanco para conservar la contraseña actual.' : null" />
+    </div>
 
-<flux:input
-    name="password"
-    type="password"
-    :label="$esEdicion ? 'Nueva contraseña' : 'Contraseña'"
-    :description="$esEdicion ? 'Déjala en blanco para mantener la actual.' : null"
-    placeholder="Mínimo 8 caracteres"
-    :required="! $esEdicion"
-/>
+    <x-form.select name="rol" label="Rol" :options="array_combine($roles, $roles)" :selected="$usuario->rol ?? 'Cajero'" required />
 
-<div class="grid grid-cols-2 gap-4">
-    <flux:select name="rol" label="Rol" required>
-        @foreach (['Administrador', 'Cajero', 'Inventario'] as $rol)
-            <flux:select.option value="{{ $rol }}" :selected="old('rol', $usuario->rol ?? 'Cajero') === $rol">{{ $rol }}</flux:select.option>
-        @endforeach
-    </flux:select>
-
-    <flux:select name="estado" label="Estado" required>
-        @foreach (['Activo', 'Inactivo'] as $estado)
-            <flux:select.option value="{{ $estado }}" :selected="old('estado', $usuario->estado ?? 'Activo') === $estado">{{ $estado }}</flux:select.option>
-        @endforeach
-    </flux:select>
+    <x-form.select name="estado" label="Estado" :options="array_combine($estados, $estados)" :selected="$usuario->estado ?? 'Activo'" required />
 </div>

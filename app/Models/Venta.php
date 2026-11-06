@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Venta extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'ventas';
 
@@ -26,10 +27,5 @@ class Venta extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
-    }
-
-    public function subtotal(): float
-    {
-        return $this->cantidad * $this->producto->precio;
     }
 }

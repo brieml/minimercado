@@ -1,61 +1,38 @@
-<x-layouts.app>
-    <div class="flex flex-col gap-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <flux:heading size="xl">Clientes</flux:heading>
-            <flux:button :href="route('clientes.create')" variant="primary" icon="plus">Nuevo cliente</flux:button>
-        </div>
+@extends('layouts.app')
 
-        <form method="GET" action="{{ route('clientes.index') }}" class="max-w-sm">
-            <flux:input type="search" name="buscar" placeholder="Buscar cliente..." value="{{ request('buscar') }}" icon="magnifying-glass" />
-        </form>
+@section('title', 'Clientes')
 
-        <flux:table>
-            <flux:table.columns>
-                <flux:table.column>Nombre</flux:table.column>
-                <flux:table.column>Dirección</flux:table.column>
-                <flux:table.column>Teléfono</flux:table.column>
-                <flux:table.column></flux:table.column>
-            </flux:table.columns>
+@section('content')
+    <x-page-header title="Listado de Clientes" subtitle="Personas a las que se les vende en el minimercado">
+        <x-button :href="route('clientes.create')">
+            <flux:icon.plus class="size-4" />
+            Nuevo Cliente
+        </x-button>
+    </x-page-header>
 
-            <flux:table.rows>
-                @forelse ($clientes as $cliente)
-                    <flux:table.row>
-                        <flux:table.cell>{{ $cliente->nombre }}</flux:table.cell>
-                        <flux:table.cell>{{ $cliente->direccion ?? '—' }}</flux:table.cell>
-                        <flux:table.cell>{{ $cliente->telefono ?? '—' }}</flux:table.cell>
-                        <flux:table.cell class="flex justify-end gap-2">
-                            <flux:button :href="route('clientes.edit', $cliente)" size="sm" icon="pencil" variant="ghost" />
-
-                            <flux:modal.trigger name="eliminar-cliente-{{ $cliente->id }}">
-                                <flux:button size="sm" icon="trash" variant="ghost" />
-                            </flux:modal.trigger>
-
-                            <flux:modal name="eliminar-cliente-{{ $cliente->id }}" class="min-w-[22rem]">
-                                <div class="flex flex-col gap-4">
-                                    <flux:heading size="lg">¿Eliminar cliente?</flux:heading>
-                                    <flux:text>Se eliminará <strong>{{ $cliente->nombre }}</strong>. Esta acción se puede revertir por un administrador.</flux:text>
-                                    <div class="flex justify-end gap-2">
-                                        <flux:modal.close>
-                                            <flux:button variant="ghost">Cancelar</flux:button>
-                                        </flux:modal.close>
-                                        <form method="POST" action="{{ route('clientes.destroy', $cliente) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <flux:button type="submit" variant="danger">Eliminar</flux:button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </flux:modal>
-                        </flux:table.cell>
-                    </flux:table.row>
-                @empty
-                    <flux:table.row>
-                        <flux:table.cell colspan="4" class="text-center text-zinc-500">No hay clientes registrados.</flux:table.cell>
-                    </flux:table.row>
-                @endforelse
-            </flux:table.rows>
-        </flux:table>
-
-        {{ $clientes->links() }}
-    </div>
-</x-layouts.app>
+    <x-table :headers="['ID', 'Nombre', 'Dirección', 'Teléfono', 'Acciones']">
+        @forelse ($clientes as $cliente)
+            <tr>
+                <td>{{ $cliente->id }}</td>
+                <td class="font-medium text-slate-900">{{ $cliente->nombre }}</td>
+                <td>{{ $cliente->direccion ?? '—' }}</td>
+                <td>{{ $cliente->telefono ?? '—' }}</td>
+                <td>
+                    <div class="flex justify-end gap-2">
+                        <x-button :href="route('clientes.edit', $cliente->id)" variant="warning" size="sm">
+                            Editar
+                        </x-button>
+                        <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST"
+                            onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-button type="submit" variant="danger" size="sm">Eliminar</x-button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        @empty
+            <x-table.empty :colspan="5">No hay clientes registrados.</x-table.empty>
+        @endforelse
+    </x-table>
+@endsection

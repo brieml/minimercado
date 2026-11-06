@@ -1,63 +1,39 @@
-<x-layouts.app>
-    <div class="flex flex-col gap-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <flux:heading size="xl">Productos</flux:heading>
-            <flux:button :href="route('productos.create')" variant="primary" icon="plus">Nuevo producto</flux:button>
-        </div>
+@extends('layouts.app')
 
-        <form method="GET" action="{{ route('productos.index') }}" class="max-w-sm">
-            <flux:input type="search" name="buscar" placeholder="Buscar producto..." value="{{ request('buscar') }}" icon="magnifying-glass" />
-        </form>
+@section('title', 'Productos')
 
-        <flux:table>
-            <flux:table.columns>
-                <flux:table.column>Descripción</flux:table.column>
-                <flux:table.column>Categoría</flux:table.column>
-                <flux:table.column>Proveedor</flux:table.column>
-                <flux:table.column>Precio</flux:table.column>
-                <flux:table.column></flux:table.column>
-            </flux:table.columns>
+@section('content')
+    <x-page-header title="Listado de Productos" subtitle="Artículos disponibles en el minimercado">
+        <x-button :href="route('productos.create')">
+            <flux:icon.plus class="size-4" />
+            Nuevo Producto
+        </x-button>
+    </x-page-header>
 
-            <flux:table.rows>
-                @forelse ($productos as $producto)
-                    <flux:table.row>
-                        <flux:table.cell>{{ $producto->descripcion }}</flux:table.cell>
-                        <flux:table.cell>{{ $producto->categoria->descripcion }}</flux:table.cell>
-                        <flux:table.cell>{{ $producto->proveedor->nombre }}</flux:table.cell>
-                        <flux:table.cell><x-precio :valor="$producto->precio" /></flux:table.cell>
-                        <flux:table.cell class="flex justify-end gap-2">
-                            <flux:button :href="route('productos.edit', $producto)" size="sm" icon="pencil" variant="ghost" />
-
-                            <flux:modal.trigger name="eliminar-producto-{{ $producto->id }}">
-                                <flux:button size="sm" icon="trash" variant="ghost" />
-                            </flux:modal.trigger>
-
-                            <flux:modal name="eliminar-producto-{{ $producto->id }}" class="min-w-[22rem]">
-                                <div class="flex flex-col gap-4">
-                                    <flux:heading size="lg">¿Eliminar producto?</flux:heading>
-                                    <flux:text>Se eliminará <strong>{{ $producto->descripcion }}</strong>. Esta acción se puede revertir por un administrador.</flux:text>
-                                    <div class="flex justify-end gap-2">
-                                        <flux:modal.close>
-                                            <flux:button variant="ghost">Cancelar</flux:button>
-                                        </flux:modal.close>
-                                        <form method="POST" action="{{ route('productos.destroy', $producto) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <flux:button type="submit" variant="danger">Eliminar</flux:button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </flux:modal>
-                        </flux:table.cell>
-                    </flux:table.row>
-                @empty
-                    <flux:table.row>
-                        <flux:table.cell colspan="5" class="text-center text-zinc-500">No hay productos registrados.</flux:table.cell>
-                    </flux:table.row>
-                @endforelse
-            </flux:table.rows>
-        </flux:table>
-
-        {{ $productos->links() }}
-    </div>
-</x-layouts.app>
+    <x-table :headers="['ID', 'Descripción', 'Precio', 'Categoría', 'Proveedor', 'Acciones']">
+        @forelse ($productos as $producto)
+            <tr>
+                <td>{{ $producto->id }}</td>
+                <td class="font-medium text-slate-900">{{ $producto->descripcion }}</td>
+                <td class="whitespace-nowrap">$ {{ number_format($producto->precio, 2, ',', '.') }}</td>
+                <td>{{ $producto->categoria?->descripcion ?? '—' }}</td>
+                <td>{{ $producto->proveedor?->nombre ?? '—' }}</td>
+                <td>
+                    <div class="flex justify-end gap-2">
+                        <x-button :href="route('productos.edit', $producto->id)" variant="warning" size="sm">
+                            Editar
+                        </x-button>
+                        <form action="{{ route('productos.destroy', $producto->id) }}" method="POST"
+                            onsubmit="return confirm('¿Seguro que deseas eliminar este registro?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-button type="submit" variant="danger" size="sm">Eliminar</x-button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        @empty
+            <x-table.empty :colspan="6">No hay productos registrados.</x-table.empty>
+        @endforelse
+    </x-table>
+@endsection

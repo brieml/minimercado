@@ -3,62 +3,68 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CategoriaController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
     {
-        $categorias = Categoria::query()
-            ->when(
-                $request->string('buscar')->toString(),
-                fn ($query, $buscar) => $query->where('descripcion', 'like', "%{$buscar}%")
-            )
-            ->orderBy('descripcion')
-            ->paginate(10)
-            ->withQueryString();
+        $categorias = Categoria::all();
 
         return view('categorias.index', compact('categorias'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create(): View
     {
         return view('categorias.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'descripcion' => ['required', 'string', 'max:100', 'unique:categorias,descripcion'],
-        ]);
-
-        Categoria::create($validated);
-
-        return redirect()->route('categorias.index')->with('status', 'Categoría creada correctamente.');
+        //
     }
 
-    public function edit(Categoria $categoria): View
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id): View
+    {
+        $categoria = Categoria::findOrFail($id);
+
         return view('categorias.edit', compact('categoria'));
     }
 
-    public function update(Request $request, Categoria $categoria): RedirectResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'descripcion' => ['required', 'string', 'max:100', 'unique:categorias,descripcion,'.$categoria->id],
-        ]);
-
-        $categoria->update($validated);
-
-        return redirect()->route('categorias.index')->with('status', 'Categoría actualizada correctamente.');
+        //
     }
 
-    public function destroy(Categoria $categoria): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
-        $categoria->delete();
-
-        return redirect()->route('categorias.index')->with('status', 'Categoría eliminada correctamente.');
+        //
     }
 }

@@ -7,6 +7,8 @@ use App\Models\Cliente;
 use App\Models\Factura;
 use App\Models\Producto;
 use App\Models\Proveedor;
+use App\Models\Usuario;
+use App\Models\Venta;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -17,26 +19,18 @@ class DashboardController extends Controller
         $clientes = Cliente::count();
         $categorias = Categoria::count();
         $proveedores = Proveedor::count();
-
-        $ventasHoy = null;
-
-        if (in_array(auth()->user()->rol, ['Administrador', 'Cajero'])) {
-            $facturasHoy = Factura::whereDate('fecha', today())
-                ->with('ventas.producto')
-                ->get();
-
-            $ventasHoy = [
-                'cantidad' => $facturasHoy->count(),
-                'total' => $facturasHoy->sum(fn (Factura $factura) => $factura->total()),
-            ];
-        }
+        $usuarios = Usuario::count();
+        $facturas = Factura::count();
+        $ventas = Venta::count();
 
         return view('dashboard', compact(
             'productos',
             'clientes',
             'categorias',
             'proveedores',
-            'ventasHoy'
+            'usuarios',
+            'facturas',
+            'ventas'
         ));
     }
 }

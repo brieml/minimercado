@@ -25,7 +25,7 @@ class AuthController extends Controller
             ->where('estado', 'Activo')
             ->first();
 
-        if (! $usuario || ! Hash::check($request->password, $usuario->password)) {
+        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
             return back()->withErrors([
                 'correo' => 'Las credenciales ingresadas no son correctas.',
             ])->withInput();

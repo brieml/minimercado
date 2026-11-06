@@ -1,17 +1,21 @@
-<x-layouts.app>
-    <div class="flex max-w-lg flex-col gap-6">
-        <flux:heading size="xl">Editar categoría</flux:heading>
+@extends('layouts.app')
 
-        <form method="POST" action="{{ route('categorias.update', $categoria) }}" class="flex flex-col gap-6">
+@section('title', 'Editar Categoría')
+
+@section('content')
+    <x-page-header title="Editar Categoría" subtitle="Modifica los datos de la categoría seleccionada" />
+
+    <x-card class="max-w-xl">
+        <form action="{{ route('categorias.update', $categoria) }}" method="POST">
             @csrf
             @method('PUT')
 
             @include('categorias.form')
 
-            <div class="flex gap-3">
-                <flux:button type="submit" variant="primary">Guardar cambios</flux:button>
-                <flux:button :href="route('categorias.index')" variant="ghost">Cancelar</flux:button>
+            <div class="mt-6 flex items-center gap-3">
+                <x-button type="submit">Actualizar</x-button>
+                <x-button :href="route('categorias.index')" variant="secondary">Cancelar</x-button>
             </div>
         </form>
-    </div>
-</x-layouts.app>
+    </x-card>
+@endsection

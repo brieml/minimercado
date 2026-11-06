@@ -21,7 +21,7 @@ class ProductoFactory extends Factory
     {
         return [
             'descripcion' => fake()->words(3, true),
-            'precio' => fake()->randomFloat(2, 1000, 50000),
+            'precio' => fake()->randomFloat(2, 500, 50000),
             'categoria_id' => Categoria::factory(),
             'proveedor_id' => Proveedor::factory(),
         ];

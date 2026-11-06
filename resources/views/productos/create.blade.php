@@ -1,16 +1,20 @@
-<x-layouts.app>
-    <div class="flex max-w-lg flex-col gap-6">
-        <flux:heading size="xl">Nuevo producto</flux:heading>
+@extends('layouts.app')
 
-        <form method="POST" action="{{ route('productos.store') }}" class="flex flex-col gap-6">
+@section('title', 'Crear Producto')
+
+@section('content')
+    <x-page-header title="Crear Producto" subtitle="Registra un nuevo producto en el inventario" />
+
+    <x-card class="max-w-3xl">
+        <form action="{{ route('productos.store') }}" method="POST">
             @csrf
 
             @include('productos.form')
 
-            <div class="flex gap-3">
-                <flux:button type="submit" variant="primary">Guardar</flux:button>
-                <flux:button :href="route('productos.index')" variant="ghost">Cancelar</flux:button>
+            <div class="mt-6 flex items-center gap-3">
+                <x-button type="submit">Guardar</x-button>
+                <x-button :href="route('productos.index')" variant="secondary">Cancelar</x-button>
             </div>
         </form>
-    </div>
-</x-layouts.app>
+    </x-card>
+@endsection

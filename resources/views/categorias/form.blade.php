@@ -1,8 +1,1 @@
-<flux:input
-    name="descripcion"
-    label="Descripción"
-    placeholder="Ej: Bebidas"
-    value="{{ old('descripcion', $categoria->descripcion ?? '') }}"
-    required
-    autofocus
-/>
+<x-form.input name="descripcion" label="Descripción" :value="$categoria->descripcion ?? null" maxlength="100" required />

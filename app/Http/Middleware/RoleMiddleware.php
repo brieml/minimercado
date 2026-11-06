@@ -14,11 +14,11 @@ class RoleMiddleware
         ...$roles
     ): Response {
 
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        if (! in_array(auth()->user()->rol, $roles)) {
+        if (!in_array(auth()->user()->rol, $roles)) {
             abort(403, 'No tienes permisos para acceder a este módulo.');
         }
 

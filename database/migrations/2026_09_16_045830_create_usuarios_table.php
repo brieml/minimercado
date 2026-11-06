@@ -22,12 +22,12 @@ return new class extends Migration
             $table->enum('rol', [
                 'Administrador',
                 'Cajero',
-                'Inventario',
+                'Inventario'
             ])->default('Cajero');
 
             $table->enum('estado', [
                 'Activo',
-                'Inactivo',
+                'Inactivo'
             ])->default('Activo');
 
             $table->timestamps();

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Factura extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'facturas';
 
@@ -18,12 +19,9 @@ class Factura extends Model
         'usuario_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'fecha' => 'date',
-        ];
-    }
+    protected $casts = [
+        'fecha' => 'date',
+    ];
 
     public function cliente()
     {
@@ -38,10 +36,5 @@ class Factura extends Model
     public function ventas()
     {
         return $this->hasMany(Venta::class);
-    }
-
-    public function total(): float
-    {
-        return $this->ventas->sum(fn (Venta $venta) => $venta->subtotal());
     }
 }

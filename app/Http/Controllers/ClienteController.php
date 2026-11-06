@@ -3,66 +3,68 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ClienteController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
     {
-        $clientes = Cliente::query()
-            ->when(
-                $request->string('buscar')->toString(),
-                fn ($query, $buscar) => $query->where('nombre', 'like', "%{$buscar}%")
-            )
-            ->orderBy('nombre')
-            ->paginate(10)
-            ->withQueryString();
+        $clientes = Cliente::all();
 
         return view('clientes.index', compact('clientes'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create(): View
     {
         return view('clientes.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'direccion' => ['nullable', 'string', 'max:200'],
-            'telefono' => ['nullable', 'string', 'max:30'],
-        ]);
-
-        Cliente::create($validated);
-
-        return redirect()->route('clientes.index')->with('status', 'Cliente creado correctamente.');
+        //
     }
 
-    public function edit(Cliente $cliente): View
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id): View
+    {
+        $cliente = Cliente::findOrFail($id);
+
         return view('clientes.edit', compact('cliente'));
     }
 
-    public function update(Request $request, Cliente $cliente): RedirectResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'direccion' => ['nullable', 'string', 'max:200'],
-            'telefono' => ['nullable', 'string', 'max:30'],
-        ]);
-
-        $cliente->update($validated);
-
-        return redirect()->route('clientes.index')->with('status', 'Cliente actualizado correctamente.');
+        //
     }
 
-    public function destroy(Cliente $cliente): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
-        $cliente->delete();
-
-        return redirect()->route('clientes.index')->with('status', 'Cliente eliminado correctamente.');
+        //
     }
 }

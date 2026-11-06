@@ -9,7 +9,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Usuario extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
+
+    /**
+     * Roles disponibles (enum `rol` de la migración).
+     *
+     * @var list<string>
+     */
+    public const ROLES = ['Administrador', 'Cajero', 'Inventario'];
+
+    /**
+     * Estados disponibles (enum `estado` de la migración).
+     *
+     * @var list<string>
+     */
+    public const ESTADOS = ['Activo', 'Inactivo'];
 
     protected $table = 'usuarios';
 
@@ -37,22 +52,23 @@ class Usuario extends Authenticatable
         return $this->hasMany(Factura::class);
     }
 
-    protected function name(): Attribute
+    /**
+     * Nombre y apellido juntos.
+     */
+    protected function nombreCompleto(): Attribute
     {
         return Attribute::make(
             get: fn () => trim("{$this->nombre} {$this->apellido}"),
         );
     }
 
-    protected function email(): Attribute
+    /**
+     * Iniciales para el avatar del usuario.
+     */
+    protected function iniciales(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->correo,
+            get: fn () => mb_strtoupper(mb_substr((string) $this->nombre, 0, 1).mb_substr((string) $this->apellido, 0, 1)),
         );
-    }
-
-    public function initials(): string
-    {
-        return mb_strtoupper(mb_substr($this->nombre, 0, 1).mb_substr($this->apellido, 0, 1));
     }
 }

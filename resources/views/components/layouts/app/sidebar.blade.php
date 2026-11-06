@@ -11,30 +11,23 @@
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
-            @php $rol = auth()->user()->rol; @endphp
-
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Módulos" class="grid">
+                <flux:navlist.group heading="Platform" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
-
-                    @if ($rol === 'Administrador')
-                        <flux:navlist.item icon="users" :href="route('usuarios.index')" :current="request()->routeIs('usuarios.*')" wire:navigate>Usuarios</flux:navlist.item>
-                    @endif
-
-                    @if (in_array($rol, ['Administrador', 'Cajero']))
-                        <flux:navlist.item icon="shopping-cart" :href="route('ventas.index')" :current="request()->routeIs('ventas.*')" wire:navigate>Ventas</flux:navlist.item>
-                        <flux:navlist.item icon="user-group" :href="route('clientes.index')" :current="request()->routeIs('clientes.*')" wire:navigate>Clientes</flux:navlist.item>
-                    @endif
-
-                    @if (in_array($rol, ['Administrador', 'Inventario']))
-                        <flux:navlist.item icon="archive-box" :href="route('productos.index')" :current="request()->routeIs('productos.*')" wire:navigate>Productos</flux:navlist.item>
-                        <flux:navlist.item icon="tag" :href="route('categorias.index')" :current="request()->routeIs('categorias.*')" wire:navigate>Categorías</flux:navlist.item>
-                        <flux:navlist.item icon="truck" :href="route('proveedores.index')" :current="request()->routeIs('proveedores.*')" wire:navigate>Proveedores</flux:navlist.item>
-                    @endif
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
+
+            <flux:navlist variant="outline">
+                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
+                    Repository
+                </flux:navlist.item>
+
+                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
+                    Documentation
+                </flux:navlist.item>
+            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">
@@ -62,6 +55,12 @@
                                 </div>
                             </div>
                         </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -106,6 +105,12 @@
                                 </div>
                             </div>
                         </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />

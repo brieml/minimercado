@@ -81,11 +81,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
             margin-bottom: 25px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             position: relative;
             z-index: 2;
+        }
+
+        .brand-icon svg {
+            width: 52px;
+            height: 52px;
         }
 
         .login-info h1 {
@@ -123,9 +127,15 @@
             height: 35px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .feature-icon svg {
+            width: 21px;
+            height: 21px;
         }
 
         /* PANEL LOGIN */
@@ -175,8 +185,18 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 18px;
+            display: flex;
             color: #9ca3af;
+            transition: color 0.25s ease;
+        }
+
+        .input-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .input-container:focus-within .input-icon {
+            color: #2563eb;
         }
 
         .form-group input {
@@ -321,7 +341,19 @@
         <div class="login-info">
 
             <div class="brand-icon">
-                🛒
+                <svg viewBox="0 0 48 48" fill="none" stroke="#1e3a8a" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <rect x="9.5" y="21" width="29" height="19.5" rx="1.2" fill="#ffffff" />
+                    <path d="M20 40.5V31.5a4 4 0 0 1 8 0v9" fill="#bfdbfe" />
+                    <circle cx="25.6" cy="36" r=".8" fill="#1e3a8a" stroke="none" />
+                    <rect x="12.5" y="26" width="5.5" height="6.5" rx=".8" fill="#dbeafe" />
+                    <rect x="30.5" y="26" width="5.5" height="6.5" rx=".8" fill="#dbeafe" />
+                    <path d="M11 9h6.5l-2 9A4.25 4.25 0 0 1 7 18Z" fill="#2563eb" />
+                    <path d="M17.5 9H24v9a4.25 4.25 0 0 1-8.5 0Z" fill="#dbeafe" />
+                    <path d="M24 9h6.5l2 9a4.25 4.25 0 0 1-8.5 0Z" fill="#2563eb" />
+                    <path d="M30.5 9H37l4 9a4.25 4.25 0 0 1-8.5 0Z" fill="#dbeafe" />
+                    <path d="M5.5 40.5h37" />
+                </svg>
             </div>
 
             <h1>Minimercado</h1>
@@ -334,17 +366,40 @@
             <div class="features">
 
                 <div class="feature">
-                    <div class="feature-icon">📦</div>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <rect x="3" y="5" width="18" height="14" rx="2.2" fill="currentColor" fill-opacity=".16" />
+                            <path d="M6.4 9v6M12.4 9v6M17.8 9v6" stroke-width="1.2" stroke-linecap="butt" />
+                            <path d="M9.2 9v6M15 9v6" stroke-width="2.4" stroke-linecap="butt" />
+                        </svg>
+                    </div>
                     <span>Control de productos e inventario</span>
                 </div>
 
                 <div class="feature">
-                    <div class="feature-icon">💰</div>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5Z" fill="currentColor"
+                                fill-opacity=".16" />
+                            <path d="M9 8h6M9 11.2h6M9 14.4h3.5" />
+                        </svg>
+                    </div>
                     <span>Gestión de ventas y operaciones</span>
                 </div>
 
                 <div class="feature">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 6.2v13.3M8 20h8M4 8.2h16" />
+                            <circle cx="12" cy="4.6" r="1.3" />
+                            <path d="M5 8.2 2.8 14M5 8.2 7.2 14M19 8.2 16.8 14M19 8.2 21.2 14" stroke-width="1.2" />
+                            <path d="M2.2 14h5.6a2.8 2.4 0 0 1-5.6 0ZM16.2 14h5.6a2.8 2.4 0 0 1-5.6 0Z"
+                                fill="currentColor" fill-opacity=".16" />
+                        </svg>
+                    </div>
                     <span>Información y control del negocio</span>
                 </div>
 
@@ -358,7 +413,7 @@
 
             <div class="login-header">
 
-                <h2>Bienvenido 👋</h2>
+                <h2>Bienvenido</h2>
 
                 <p>
                     Ingresa tus credenciales para acceder al sistema.
@@ -384,7 +439,13 @@
 
                     <div class="input-container">
 
-                        <span class="input-icon">✉️</span>
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <circle cx="12" cy="12" r="3.6" fill="currentColor" fill-opacity=".12" />
+                                <path d="M15.6 8.4v4.3a2.4 2.4 0 0 0 4.8 0V12a8.4 8.4 0 1 0-3.3 6.7" />
+                            </svg>
+                        </span>
 
                         <input
                             type="email"
@@ -408,7 +469,14 @@
 
                     <div class="input-container">
 
-                        <span class="input-icon">🔒</span>
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <circle cx="8" cy="15.5" r="3.8" fill="currentColor" fill-opacity=".12" />
+                                <circle cx="8" cy="15.5" r=".9" fill="currentColor" stroke="none" />
+                                <path d="M10.8 12.7 20.2 3.3M17.2 6.3l2.6 2.6M14.3 9.2l2.2 2.2" />
+                            </svg>
+                        </span>
 
                         <input
                             type="password"

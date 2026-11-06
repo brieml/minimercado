@@ -1,22 +1,9 @@
-<flux:input
-    name="nombre"
-    label="Nombre"
-    placeholder="Ej: Distribuidora La Economía"
-    value="{{ old('nombre', $proveedor->nombre ?? '') }}"
-    required
-    autofocus
-/>
+<div class="grid gap-5 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+        <x-form.input name="nombre" label="Nombre" :value="$proveedor->nombre ?? null" maxlength="120" required />
+    </div>
 
-<flux:input
-    name="direccion"
-    label="Dirección"
-    placeholder="Ej: Sincelejo"
-    value="{{ old('direccion', $proveedor->direccion ?? '') }}"
-/>
+    <x-form.input name="direccion" label="Dirección" :value="$proveedor->direccion ?? null" maxlength="200" />
 
-<flux:input
-    name="telefono"
-    label="Teléfono"
-    placeholder="Ej: 3001234567"
-    value="{{ old('telefono', $proveedor->telefono ?? '') }}"
-/>
+    <x-form.input name="telefono" label="Teléfono" type="tel" :value="$proveedor->telefono ?? null" maxlength="30" />
+</div>
