@@ -3,7 +3,7 @@
 @section('title', 'Editar Factura')
 
 @section('content')
-    <x-page-header title="Editar Factura" subtitle="Modifica los datos de la factura seleccionada" />
+    <x-page-header :title="'Editar Factura #'.$factura->id" subtitle="Corrige la fecha, el cliente o quien atendió la venta" />
 
     <x-card class="max-w-3xl">
         <form action="{{ route('facturas.update', $factura) }}" method="POST" novalidate>

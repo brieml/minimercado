@@ -1,18 +1,24 @@
 @php
-    $opcionesFactura = $facturas->mapWithKeys(fn ($factura) => [
-        $factura->id => '#'.$factura->id.' · '.$factura->fecha->format('d/m/Y').' · '.($factura->cliente?->nombre ?? 'Sin cliente'),
-    ]);
+    // Cantidad sin ceros sobrantes (2 en lugar de 2.000) para el campo numérico.
+    $cantidadActual = rtrim(rtrim(number_format((float) $venta->cantidad, 3, '.', ''), '0'), '.');
+
+    $linea = [
+        'producto_id' => old('producto_id', $venta->producto_id),
+        'cantidad' => old('cantidad', $cantidadActual),
+    ];
 @endphp
 
 <x-form.errors />
 
-<div class="grid gap-5 sm:grid-cols-2">
-    <div class="sm:col-span-2">
-        <x-form.select name="factura_id" label="Factura" :options="$opcionesFactura" :selected="$venta->factura_id ?? null" required />
-    </div>
+<dl class="mb-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+    <x-detail label="Factura">
+        @if ($venta->factura)
+            #{{ $venta->factura->id }} · {{ $venta->factura->fecha->format('d/m/Y') }}
+        @else
+            —
+        @endif
+    </x-detail>
+    <x-detail label="Cliente">{{ $venta->factura?->cliente?->nombre ?? '—' }}</x-detail>
+</dl>
 
-    <x-form.select name="producto_id" label="Producto" :options="$productos->pluck('descripcion', 'id')"
-        :selected="$venta->producto_id ?? null" required />
-
-    <x-form.input name="cantidad" label="Cantidad" type="number" step="0.001" min="0.001" :value="$venta->cantidad ?? null" required />
-</div>
+@include('ventas.linea')

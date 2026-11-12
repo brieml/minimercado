@@ -27,13 +27,29 @@ dataset('modulos', [
     'ventas' => ['ventas', 'venta', Venta::class, 'producto.descripcion'],
 ]);
 
+/*
+ * Los módulos que se crean desde su propio formulario. Las facturas quedan fuera:
+ * no tienen alta, las genera el registro de una venta.
+ */
+dataset('modulos_con_alta', [
+    'usuarios' => ['usuarios'],
+    'clientes' => ['clientes'],
+    'categorias' => ['categorias'],
+    'proveedores' => ['proveedores'],
+    'productos' => ['productos'],
+    'ventas' => ['ventas'],
+]);
+
 test('los invitados son redirigidos al login en :dataset', function (string $recurso, string $variable, string $modelo) {
     $registro = $modelo::factory()->create();
 
     $this->get(route("$recurso.index"))->assertRedirect(route('login'));
-    $this->get(route("$recurso.create"))->assertRedirect(route('login'));
     $this->get(route("$recurso.edit", $registro))->assertRedirect(route('login'));
 })->with('modulos');
+
+test('los invitados son redirigidos al login en el formulario de alta de :dataset', function (string $recurso) {
+    $this->get(route("$recurso.create"))->assertRedirect(route('login'));
+})->with('modulos_con_alta');
 
 test('el listado de :dataset muestra sus registros', function (string $recurso, string $variable, string $modelo, string $campo) {
     $this->actingAs(Usuario::factory()->administrador()->create());
@@ -54,7 +70,7 @@ test('el formulario de creación de :dataset se muestra con @csrf y la ruta de s
         ->assertViewIs("$recurso.create")
         ->assertSee(route("$recurso.store"), false)
         ->assertSee('name="_token"', false);
-})->with('modulos');
+})->with('modulos_con_alta');
 
 test('el formulario de edición de :dataset se muestra con sus datos, @method(PUT) y la ruta de update', function (string $recurso, string $variable, string $modelo, string $campo) {
     $this->actingAs(Usuario::factory()->administrador()->create());
@@ -88,12 +104,29 @@ test('las rutas de :dataset usan los verbos HTTP del recurso', function (string 
     $rutas = Route::getRoutes();
 
     expect($rutas->getByName("$recurso.index")->methods())->toContain('GET')
-        ->and($rutas->getByName("$recurso.create")->methods())->toContain('GET')
-        ->and($rutas->getByName("$recurso.store")->methods())->toBe(['POST'])
+        ->and($rutas->getByName("$recurso.show")->methods())->toContain('GET')
         ->and($rutas->getByName("$recurso.edit")->methods())->toContain('GET')
         ->and($rutas->getByName("$recurso.update")->methods())->toBe(['PUT', 'PATCH'])
         ->and($rutas->getByName("$recurso.destroy")->methods())->toBe(['DELETE']);
 })->with('modulos');
+
+test('las rutas de alta de :dataset usan los verbos HTTP del recurso', function (string $recurso) {
+    $rutas = Route::getRoutes();
+
+    expect($rutas->getByName("$recurso.create")->methods())->toContain('GET')
+        ->and($rutas->getByName("$recurso.store")->methods())->toBe(['POST']);
+})->with('modulos_con_alta');
+
+test('las facturas no tienen alta: ni la ruta del formulario ni la de guardado', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+
+    expect(Route::has('facturas.create'))->toBeFalse()
+        ->and(Route::has('facturas.store'))->toBeFalse();
+
+    // /facturas/create se interpreta como el detalle de una factura "create", que no existe.
+    $this->get('/facturas/create')->assertNotFound();
+    $this->post('/facturas', ['fecha' => '2026-11-03'])->assertStatus(405);
+});
 
 test('la ruta de proveedores usa el parámetro singular {proveedor}', function () {
     expect(Route::getRoutes()->getByName('proveedores.edit')->uri())->toBe('proveedores/{proveedor}/edit');
@@ -120,27 +153,28 @@ test('la edición de un producto deja seleccionadas su categoría y su proveedor
         ->assertSee('selected>'.e($producto->proveedor->nombre).'</option>', false);
 });
 
-test('el formulario de facturas lista los clientes y los usuarios', function () {
+test('el formulario de edición de facturas lista los clientes y los usuarios', function () {
     $this->actingAs(Usuario::factory()->administrador()->create());
+    $factura = Factura::factory()->create();
     $cliente = Cliente::factory()->create();
     $usuario = Usuario::factory()->create();
 
-    $this->get(route('facturas.create'))
+    $this->get(route('facturas.edit', $factura))
         ->assertViewHas('clientes')
         ->assertViewHas('usuarios')
         ->assertSee($cliente->nombre)
         ->assertSee($usuario->nombre_completo);
 });
 
-test('el formulario de ventas lista las facturas y los productos', function () {
+test('el formulario de ventas lista los clientes y los productos', function () {
     $this->actingAs(Usuario::factory()->administrador()->create());
-    $factura = Factura::factory()->create();
+    $cliente = Cliente::factory()->create();
     $producto = Producto::factory()->create();
 
     $this->get(route('ventas.create'))
-        ->assertViewHas('facturas')
+        ->assertViewHas('clientes')
         ->assertViewHas('productos')
-        ->assertSee('#'.$factura->id)
+        ->assertSee($cliente->nombre)
         ->assertSee($producto->descripcion);
 });
 

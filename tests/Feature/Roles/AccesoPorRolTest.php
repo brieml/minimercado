@@ -197,6 +197,25 @@ test('el usuario de inventario no puede registrar ventas ni clientes ni tocar fa
         ->and($factura->fresh()->trashed())->toBeFalse();
 });
 
+test('el cajero registra una venta y se genera su factura', function () {
+    $cajero = usuarioConRol('Cajero');
+    $cliente = Cliente::factory()->create();
+    $producto = Producto::factory()->create();
+
+    $this->actingAs($cajero);
+
+    $this->post(route('ventas.store'), [
+        'cliente_id' => $cliente->id,
+        'lineas' => [['producto_id' => $producto->id, 'cantidad' => '3']],
+    ])->assertRedirect(route('facturas.show', Factura::firstOrFail()));
+
+    $factura = Factura::with('ventas')->firstOrFail();
+
+    expect($factura->usuario_id)->toBe($cajero->id)
+        ->and($factura->cliente_id)->toBe($cliente->id)
+        ->and($factura->ventas)->toHaveCount(1);
+});
+
 test('el cajero registra clientes y consulta las facturas', function () {
     $this->actingAs(usuarioConRol('Cajero'));
     $factura = Factura::factory()->create();

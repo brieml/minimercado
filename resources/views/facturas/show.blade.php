@@ -45,7 +45,7 @@
                         —
                     @endif
                 </td>
-                <td class="whitespace-nowrap">{{ number_format($venta->cantidad, 3, ',', '.') }}</td>
+                <td class="whitespace-nowrap">{{ $venta->cantidad_formateada }}</td>
                 <td class="whitespace-nowrap">$ {{ number_format($venta->producto?->precio ?? 0, 2, ',', '.') }}</td>
                 <td class="whitespace-nowrap text-right">$ {{ number_format($venta->subtotal, 2, ',', '.') }}</td>
             </tr>

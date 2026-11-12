@@ -23,7 +23,7 @@
                 </td>
                 <td>{{ $venta->factura?->cliente?->nombre ?? '—' }}</td>
                 <td class="font-medium text-slate-900">{{ $venta->producto?->descripcion ?? '—' }}</td>
-                <td class="whitespace-nowrap">{{ number_format($venta->cantidad, 3, ',', '.') }}</td>
+                <td class="whitespace-nowrap">{{ $venta->cantidad_formateada }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
                         <x-button :href="route('ventas.show', $venta->id)" variant="secondary" size="sm">

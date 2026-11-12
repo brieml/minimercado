@@ -179,11 +179,16 @@ return [
         'precio' => [
             'decimal' => 'El precio no puede tener más de 2 decimales.',
         ],
-        'cantidad' => [
-            'decimal' => 'La cantidad no puede tener más de 3 decimales.',
-        ],
         'tiene_gramaje' => [
             'boolean' => 'Indica si el producto se vende por gramaje (sí o no).',
+        ],
+        'lineas' => [
+            'required' => 'Agrega al menos un producto a la venta.',
+            'min' => 'Agrega al menos un producto a la venta.',
+            'max' => 'Una venta admite como máximo :max productos.',
+        ],
+        'lineas.*.producto_id' => [
+            'distinct' => 'Un producto solo puede aparecer una vez en la venta: suma las cantidades en una sola línea.',
         ],
     ],
 
@@ -216,6 +221,9 @@ return [
         'factura_id' => 'factura',
         'producto_id' => 'producto',
         'tiene_gramaje' => 'gramaje',
+        'lineas' => 'productos',
+        'lineas.*.producto_id' => 'producto',
+        'lineas.*.cantidad' => 'cantidad',
     ],
 
 ];

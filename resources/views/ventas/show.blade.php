@@ -32,7 +32,7 @@
                     —
                 @endif
             </x-detail>
-            <x-detail label="Cantidad">{{ number_format($venta->cantidad, 3, ',', '.') }}</x-detail>
+            <x-detail label="Cantidad">{{ $venta->cantidad_formateada }}</x-detail>
             <x-detail label="Precio unitario">$ {{ number_format($venta->producto?->precio ?? 0, 2, ',', '.') }}</x-detail>
             <x-detail label="Subtotal">
                 <span class="font-semibold text-slate-900">$ {{ number_format($venta->subtotal, 2, ',', '.') }}</span>

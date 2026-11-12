@@ -46,7 +46,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('productos', ProductoController::class)
         ->middleware($soloRolesDe('productos'));
 
+    // Las facturas no se crean a mano: las genera el registro de una venta.
     Route::resource('facturas', FacturaController::class)
+        ->except(['create', 'store'])
         ->middleware($soloRolesDe('facturas'));
 
     Route::resource('ventas', VentaController::class)

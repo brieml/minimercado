@@ -31,6 +31,17 @@ class Venta extends Model
     }
 
     /**
+     * Cantidad lista para mostrar: sin decimales si es entera (2) y sin ceros
+     * sobrantes si no lo es (1,5), como en los productos con gramaje.
+     */
+    protected function cantidadFormateada(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => rtrim(rtrim(number_format((float) $this->cantidad, 3, ',', '.'), '0'), ','),
+        );
+    }
+
+    /**
      * Importe de la línea: cantidad por el precio del producto.
      */
     protected function subtotal(): Attribute

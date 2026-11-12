@@ -3,7 +3,7 @@
 @section('title', 'Editar Venta')
 
 @section('content')
-    <x-page-header title="Editar Venta" subtitle="Modifica los datos de la venta seleccionada" />
+    <x-page-header title="Editar Venta" subtitle="Corrige el producto o la cantidad; la factura de la venta no cambia" />
 
     <x-card class="max-w-3xl">
         <form action="{{ route('ventas.update', $venta) }}" method="POST" novalidate>

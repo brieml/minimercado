@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
 use App\Models\Factura;
 use App\Models\Producto;
 use App\Models\Venta;
+use App\Rules\CantidadSegunProducto;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -28,22 +31,47 @@ class VentaController extends Controller
      */
     public function create(): View
     {
-        $facturas = Factura::with('cliente')->get();
-        $productos = Producto::all();
+        $clientes = Cliente::orderBy('nombre')->get();
+        $productos = Producto::orderBy('descripcion')->get();
 
-        return view('ventas.create', compact('facturas', 'productos'));
+        return view('ventas.create', compact('clientes', 'productos'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Registra una venta: genera la factura del cliente y una venta por cada producto.
+     *
+     * La factura se crea sola (fecha de hoy y el usuario que atiende), todo dentro de
+     * una transacción para que nunca quede una factura sin sus productos.
      */
     public function store(Request $request): RedirectResponse
     {
-        $datos = $request->validate($this->reglas());
+        $datos = $request->validate([
+            'cliente_id' => ['required', Rule::exists('clientes', 'id')->whereNull('deleted_at')],
+            'lineas' => ['required', 'array', 'min:1', 'max:50'],
+            'lineas.*.producto_id' => ['required', 'distinct', Rule::exists('productos', 'id')->whereNull('deleted_at')],
+            'lineas.*.cantidad' => $this->reglasDeCantidad(),
+        ]);
 
-        Venta::create($datos);
+        try {
+            $factura = DB::transaction(function () use ($datos, $request) {
+                $factura = Factura::create([
+                    'fecha' => now()->toDateString(),
+                    'cliente_id' => $datos['cliente_id'],
+                    'usuario_id' => $request->user()->id,
+                ]);
 
-        return redirect()->route('ventas.index')->with('success', 'Venta creada correctamente.');
+                $factura->ventas()->createMany($datos['lineas']);
+
+                return $factura;
+            });
+        } catch (Exception $e) {
+            report($e);
+
+            return back()->withInput()->with('error', 'No se pudo registrar la venta. Intenta de nuevo.');
+        }
+
+        return redirect()->route('facturas.show', $factura)
+            ->with('success', "Venta registrada. Se generó la factura #{$factura->id}.");
     }
 
     /**
@@ -61,21 +89,25 @@ class VentaController extends Controller
      */
     public function edit(string $id): View
     {
-        $venta = Venta::findOrFail($id);
-        $facturas = Factura::with('cliente')->get();
-        $productos = Producto::all();
+        $venta = Venta::with('factura.cliente')->findOrFail($id);
+        $productos = Producto::orderBy('descripcion')->get();
 
-        return view('ventas.edit', compact('venta', 'facturas', 'productos'));
+        return view('ventas.edit', compact('venta', 'productos'));
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * La factura de la venta no cambia: solo se corrige el producto o la cantidad.
      */
     public function update(Request $request, string $id): RedirectResponse
     {
         $venta = Venta::findOrFail($id);
 
-        $venta->update($request->validate($this->reglas()));
+        $venta->update($request->validate([
+            'producto_id' => ['required', Rule::exists('productos', 'id')->whereNull('deleted_at')],
+            'cantidad' => $this->reglasDeCantidad(),
+        ]));
 
         return redirect()->route('ventas.index')->with('success', 'Venta actualizada correctamente.');
     }
@@ -97,19 +129,13 @@ class VentaController extends Controller
     }
 
     /**
-     * Reglas de validación compartidas por store y update.
+     * Reglas de la cantidad: positiva, dentro de la columna decimal(10, 3) y entera
+     * salvo en los productos con gramaje, que admiten hasta 3 decimales.
      *
-     * La cantidad admite hasta 3 decimales (productos que se venden al peso)
-     * y cabe en la columna decimal(10, 3).
-     *
-     * @return array<string, array<int, mixed>>
+     * @return array<int, mixed>
      */
-    private function reglas(): array
+    private function reglasDeCantidad(): array
     {
-        return [
-            'factura_id' => ['required', Rule::exists('facturas', 'id')->whereNull('deleted_at')],
-            'producto_id' => ['required', Rule::exists('productos', 'id')->whereNull('deleted_at')],
-            'cantidad' => ['required', 'numeric', 'decimal:0,3', 'min:0.001', 'max:9999999.999'],
-        ];
+        return ['required', 'numeric', 'min:0.001', 'max:9999999.999', new CantidadSegunProducto];
     }
 }
