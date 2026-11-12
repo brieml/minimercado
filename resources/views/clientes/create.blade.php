@@ -6,7 +6,7 @@
     <x-page-header title="Crear Cliente" subtitle="Registra un nuevo cliente del minimercado" />
 
     <x-card class="max-w-2xl">
-        <form action="{{ route('clientes.store') }}" method="POST">
+        <form action="{{ route('clientes.store') }}" method="POST" novalidate>
             @csrf
 
             @include('clientes.form')

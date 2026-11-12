@@ -6,7 +6,7 @@
     <x-page-header title="Editar Cliente" subtitle="Modifica los datos del cliente seleccionado" />
 
     <x-card class="max-w-2xl">
-        <form action="{{ route('clientes.update', $cliente) }}" method="POST">
+        <form action="{{ route('clientes.update', $cliente) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 

@@ -19,6 +19,9 @@
                 <td>{{ $cliente->telefono ?? '—' }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('clientes.show', $cliente->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('clientes.edit', $cliente->id)" variant="warning" size="sm">
                             Editar
                         </x-button>
