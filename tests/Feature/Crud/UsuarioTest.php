@@ -36,7 +36,7 @@ test('los invitados no pueden crear, actualizar ni eliminar usuarios', function 
 });
 
 test('crea un usuario y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('usuarios.store'), datosValidosDeUsuario())
         ->assertRedirect(route('usuarios.index'))
@@ -52,7 +52,7 @@ test('crea un usuario y confirma con un mensaje de sesión', function () {
 });
 
 test('guarda la contraseña cifrada y el usuario creado puede iniciar sesión con ella', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('usuarios.store'), datosValidosDeUsuario())->assertSessionHasNoErrors();
 
@@ -69,7 +69,7 @@ test('guarda la contraseña cifrada y el usuario creado puede iniciar sesión co
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('usuarios.store'), datosValidosDeUsuario())
@@ -81,7 +81,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('rechaza datos inválidos al crear un usuario', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('usuarios.store'), datosValidosDeUsuario($cambios))->assertSessionHasErrors($campo);
 
@@ -103,7 +103,7 @@ test('rechaza datos inválidos al crear un usuario', function (array $cambios, s
 ]);
 
 test('no permite repetir el correo de otro usuario', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Usuario::factory()->create(['correo' => 'laura.gomez@minimercado.test']);
 
     $this->from(route('usuarios.create'))
@@ -116,14 +116,14 @@ test('no permite repetir el correo de otro usuario', function () {
 });
 
 test('tampoco permite reutilizar el correo de un usuario eliminado', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Usuario::factory()->create(['correo' => 'laura.gomez@minimercado.test'])->delete();
 
     $this->post(route('usuarios.store'), datosValidosDeUsuario())->assertSessionHasErrors('correo');
 });
 
 test('muestra los errores, conserva lo escrito y nunca devuelve la contraseña al fallar al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->from(route('usuarios.create'))
         ->followingRedirects()
@@ -140,7 +140,7 @@ test('muestra los errores, conserva lo escrito y nunca devuelve la contraseña a
 });
 
 test('muestra el detalle de un usuario con sus facturas y sin exponer la contraseña', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['nombre' => 'Laura', 'apellido' => 'Gómez', 'rol' => 'Cajero']);
     Factura::factory()->create(['usuario_id' => $usuario->id, 'fecha' => '2026-11-03']);
 
@@ -156,13 +156,13 @@ test('muestra el detalle de un usuario con sus facturas y sin exponer la contras
 });
 
 test('el listado ofrece el enlace al detalle de cada usuario', function () {
-    $this->actingAs($actual = Usuario::factory()->create());
+    $this->actingAs($actual = Usuario::factory()->administrador()->create());
 
     $this->get(route('usuarios.index'))->assertSee(route('usuarios.show', $actual), false);
 });
 
 test('actualiza un usuario y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['nombre' => 'Marta', 'rol' => 'Cajero']);
 
     $this->put(route('usuarios.update', $usuario), datosValidosDeUsuario(['nombre' => 'Marta Elena', 'rol' => 'Inventario']))
@@ -177,7 +177,7 @@ test('actualiza un usuario y confirma con un mensaje de sesión', function () {
 });
 
 test('conserva la contraseña actual cuando se deja en blanco al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['password' => Hash::make('clave-anterior')]);
 
     $this->put(route('usuarios.update', $usuario), datosValidosDeUsuario(['password' => '']))
@@ -187,7 +187,7 @@ test('conserva la contraseña actual cuando se deja en blanco al actualizar', fu
 });
 
 test('cambia la contraseña, cifrada, cuando se escribe una nueva al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['password' => Hash::make('clave-anterior')]);
 
     $this->put(route('usuarios.update', $usuario), datosValidosDeUsuario(['password' => 'clave-nueva-123']))
@@ -201,7 +201,7 @@ test('cambia la contraseña, cifrada, cuando se escribe una nueva al actualizar'
 });
 
 test('puede conservar su propio correo al actualizar, pero no tomar el de otro usuario', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['correo' => 'marta@minimercado.test']);
     Usuario::factory()->create(['correo' => 'otro@minimercado.test']);
 
@@ -215,7 +215,7 @@ test('puede conservar su propio correo al actualizar, pero no tomar el de otro u
 });
 
 test('rechaza datos inválidos al actualizar un usuario', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create(['nombre' => 'Marta']);
 
     $this->put(route('usuarios.update', $usuario), datosValidosDeUsuario($cambios))->assertSessionHasErrors($campo);
@@ -230,7 +230,7 @@ test('rechaza datos inválidos al actualizar un usuario', function (array $cambi
 ]);
 
 test('muestra los errores al actualizar sin devolver nunca la contraseña en el formulario', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create();
 
     $this->from(route('usuarios.edit', $usuario))
@@ -244,7 +244,7 @@ test('muestra los errores al actualizar sin devolver nunca la contraseña en el 
 });
 
 test('un usuario no puede desactivarse a sí mismo, pero sí a otro', function () {
-    $this->actingAs($actual = Usuario::factory()->create());
+    $this->actingAs($actual = Usuario::factory()->administrador()->create());
     $otro = Usuario::factory()->create();
 
     $this->from(route('usuarios.edit', $actual))
@@ -261,7 +261,7 @@ test('un usuario no puede desactivarse a sí mismo, pero sí a otro', function (
 });
 
 test('elimina otro usuario (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create();
 
     $this->delete(route('usuarios.destroy', $usuario))
@@ -272,7 +272,7 @@ test('elimina otro usuario (borrado lógico) y confirma con un mensaje de sesió
 });
 
 test('no permite que un usuario elimine su propia cuenta', function () {
-    $this->actingAs($actual = Usuario::factory()->create());
+    $this->actingAs($actual = Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->delete(route('usuarios.destroy', $actual))
@@ -283,7 +283,7 @@ test('no permite que un usuario elimine su propia cuenta', function () {
 });
 
 test('no elimina un usuario que tiene facturas y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create();
     Factura::factory()->create(['usuario_id' => $usuario->id]);
 
@@ -296,7 +296,7 @@ test('no elimina un usuario que tiene facturas y avisa con un mensaje de error',
 });
 
 test('mostrar, actualizar o eliminar un usuario inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('usuarios.show', 999999))->assertNotFound();
     $this->put(route('usuarios.update', 999999), datosValidosDeUsuario())->assertNotFound();

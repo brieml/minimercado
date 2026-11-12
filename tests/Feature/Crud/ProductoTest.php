@@ -39,7 +39,7 @@ test('los invitados no pueden crear, actualizar ni eliminar productos', function
 });
 
 test('crea un producto y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeProducto();
 
     $this->post(route('productos.store'), $datos)
@@ -50,7 +50,7 @@ test('crea un producto y confirma con un mensaje de sesión', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('productos.store'), datosValidosDeProducto())
@@ -62,7 +62,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('acepta precios enteros, con uno o dos decimales y el máximo que cabe en la columna', function (string $precio) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('productos.store'), datosValidosDeProducto(['precio' => $precio]))
         ->assertSessionHasNoErrors();
@@ -72,7 +72,7 @@ test('acepta precios enteros, con uno o dos decimales y el máximo que cabe en l
 })->with(['0', '1500', '1500.5', '1500.50', '9999999999.99']);
 
 test('rechaza datos inválidos al crear un producto', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('productos.store'), datosValidosDeProducto($cambios))->assertSessionHasErrors($campo);
 
@@ -92,14 +92,14 @@ test('rechaza datos inválidos al crear un producto', function (array $cambios, 
 ]);
 
 test('explica con un mensaje claro que el precio no admite más de dos decimales', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('productos.store'), datosValidosDeProducto(['precio' => '10.555']))
         ->assertSessionHasErrors(['precio' => 'El precio no puede tener más de 2 decimales.']);
 });
 
 test('no acepta una categoría ni un proveedor que ya fueron eliminados', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoriaEliminada = Categoria::factory()->create();
     $proveedorEliminado = Proveedor::factory()->create();
     $categoriaEliminada->delete();
@@ -114,7 +114,7 @@ test('no acepta una categoría ni un proveedor que ya fueron eliminados', functi
 });
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeProducto(['precio' => 'abc']);
 
     $this->from(route('productos.create'))
@@ -131,7 +131,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('pide elegir categoría y proveedor cuando se envían vacíos', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->from(route('productos.create'))
         ->followingRedirects()
@@ -142,7 +142,7 @@ test('pide elegir categoría y proveedor cuando se envían vacíos', function ()
 });
 
 test('muestra el detalle de un producto con su categoría, proveedor y ventas', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create(['descripcion' => 'Granos']);
     $proveedor = Proveedor::factory()->create(['nombre' => 'Distribuidora Sucre']);
     $producto = Producto::factory()->create([
@@ -169,14 +169,14 @@ test('muestra el detalle de un producto con su categoría, proveedor y ventas', 
 });
 
 test('el listado ofrece el enlace al detalle de cada producto', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create();
 
     $this->get(route('productos.index'))->assertSee(route('productos.show', $producto), false);
 });
 
 test('actualiza un producto y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create(['descripcion' => 'Leche entera', 'precio' => 3000]);
     $datos = datosValidosDeProducto(['descripcion' => 'Leche deslactosada', 'precio' => '3200.00']);
 
@@ -193,7 +193,7 @@ test('actualiza un producto y confirma con un mensaje de sesión', function () {
 });
 
 test('rechaza datos inválidos al actualizar un producto', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create(['descripcion' => 'Leche entera', 'precio' => 3000]);
 
     $this->put(route('productos.update', $producto), datosValidosDeProducto($cambios))->assertSessionHasErrors($campo);
@@ -208,7 +208,7 @@ test('rechaza datos inválidos al actualizar un producto', function (array $camb
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create();
 
     $this->from(route('productos.edit', $producto))
@@ -220,7 +220,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina un producto (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create();
 
     $this->delete(route('productos.destroy', $producto))
@@ -231,7 +231,7 @@ test('elimina un producto (borrado lógico) y confirma con un mensaje de sesión
 });
 
 test('no elimina un producto que tiene ventas y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create();
     Venta::factory()->create(['producto_id' => $producto->id]);
 
@@ -244,7 +244,7 @@ test('no elimina un producto que tiene ventas y avisa con un mensaje de error', 
 });
 
 test('mostrar, actualizar o eliminar un producto inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('productos.show', 999999))->assertNotFound();
     $this->put(route('productos.update', 999999), datosValidosDeProducto())->assertNotFound();

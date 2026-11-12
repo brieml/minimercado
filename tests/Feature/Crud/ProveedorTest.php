@@ -26,7 +26,7 @@ test('los invitados no pueden crear, actualizar ni eliminar proveedores', functi
 });
 
 test('crea un proveedor y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('proveedores.store'), datosValidosDeProveedor())
         ->assertRedirect(route('proveedores.index'))
@@ -36,7 +36,7 @@ test('crea un proveedor y confirma con un mensaje de sesión', function () {
 });
 
 test('la dirección y el teléfono son opcionales', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('proveedores.store'), ['nombre' => 'Proveedor local', 'direccion' => '', 'telefono' => ''])
         ->assertSessionHasNoErrors();
@@ -45,7 +45,7 @@ test('la dirección y el teléfono son opcionales', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('proveedores.store'), datosValidosDeProveedor())
@@ -57,7 +57,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('rechaza datos inválidos al crear un proveedor', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('proveedores.store'), datosValidosDeProveedor($cambios))->assertSessionHasErrors($campo);
 
@@ -71,7 +71,7 @@ test('rechaza datos inválidos al crear un proveedor', function (array $cambios,
 ]);
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->from(route('proveedores.create'))
         ->followingRedirects()
@@ -85,7 +85,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('muestra el detalle de un proveedor con sus productos', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create(['nombre' => 'Distribuciones Sucre']);
     $categoria = Categoria::factory()->create(['descripcion' => 'Alimentos']);
     Producto::factory()->create(['proveedor_id' => $proveedor->id, 'categoria_id' => $categoria->id, 'descripcion' => 'Arroz 1 Kg']);
@@ -100,14 +100,14 @@ test('muestra el detalle de un proveedor con sus productos', function () {
 });
 
 test('el listado ofrece el enlace al detalle de cada proveedor', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create();
 
     $this->get(route('proveedores.index'))->assertSee(route('proveedores.show', $proveedor), false);
 });
 
 test('actualiza un proveedor y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create(['nombre' => 'Comercializadora Caribe']);
 
     $this->put(route('proveedores.update', $proveedor), datosValidosDeProveedor(['nombre' => 'Caribe S.A.S.']))
@@ -118,7 +118,7 @@ test('actualiza un proveedor y confirma con un mensaje de sesión', function () 
 });
 
 test('rechaza datos inválidos al actualizar un proveedor', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create(['nombre' => 'Comercializadora Caribe']);
 
     $this->put(route('proveedores.update', $proveedor), datosValidosDeProveedor($cambios))->assertSessionHasErrors($campo);
@@ -130,7 +130,7 @@ test('rechaza datos inválidos al actualizar un proveedor', function (array $cam
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create();
 
     $this->from(route('proveedores.edit', $proveedor))
@@ -142,7 +142,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina un proveedor (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create();
 
     $this->delete(route('proveedores.destroy', $proveedor))
@@ -153,7 +153,7 @@ test('elimina un proveedor (borrado lógico) y confirma con un mensaje de sesió
 });
 
 test('no elimina un proveedor que tiene productos y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $proveedor = Proveedor::factory()->create();
     Producto::factory()->create(['proveedor_id' => $proveedor->id]);
 
@@ -166,7 +166,7 @@ test('no elimina un proveedor que tiene productos y avisa con un mensaje de erro
 });
 
 test('mostrar, actualizar o eliminar un proveedor inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('proveedores.show', 999999))->assertNotFound();
     $this->put(route('proveedores.update', 999999), datosValidosDeProveedor())->assertNotFound();

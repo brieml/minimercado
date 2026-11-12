@@ -13,21 +13,21 @@
             <x-detail label="ID">{{ $venta->id }}</x-detail>
             <x-detail label="Factura">
                 @if ($venta->factura)
-                    <a href="{{ route('facturas.show', $venta->factura->id) }}" class="text-blue-600 hover:underline">#{{ $venta->factura->id }} · {{ $venta->factura->fecha->format('d/m/Y') }}</a>
+                    <x-module-link module="facturas" :href="route('facturas.show', $venta->factura->id)">#{{ $venta->factura->id }} · {{ $venta->factura->fecha->format('d/m/Y') }}</x-module-link>
                 @else
                     —
                 @endif
             </x-detail>
             <x-detail label="Cliente">
                 @if ($venta->factura?->cliente)
-                    <a href="{{ route('clientes.show', $venta->factura->cliente->id) }}" class="text-blue-600 hover:underline">{{ $venta->factura->cliente->nombre }}</a>
+                    <x-module-link module="clientes" :href="route('clientes.show', $venta->factura->cliente->id)">{{ $venta->factura->cliente->nombre }}</x-module-link>
                 @else
                     —
                 @endif
             </x-detail>
             <x-detail label="Producto">
                 @if ($venta->producto)
-                    <a href="{{ route('productos.show', $venta->producto->id) }}" class="text-blue-600 hover:underline">{{ $venta->producto->descripcion }}</a>
+                    <x-module-link module="productos" :href="route('productos.show', $venta->producto->id)">{{ $venta->producto->descripcion }}</x-module-link>
                 @else
                     —
                 @endif

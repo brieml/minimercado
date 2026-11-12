@@ -26,6 +26,24 @@ class Usuario extends Authenticatable
      */
     public const ESTADOS = ['Activo', 'Inactivo'];
 
+    /**
+     * Módulos a los que puede entrar cada rol (nombre del recurso en las rutas).
+     *
+     * Es la única fuente de verdad: las rutas (middleware `role`), el menú lateral
+     * y el dashboard se construyen a partir de esta tabla.
+     *
+     * - Administrador: todos los módulos.
+     * - Cajero: registra ventas (que generan la factura) y clientes, y consulta las facturas.
+     * - Inventario: administra productos, categorías y proveedores.
+     *
+     * @var array<string, list<string>>
+     */
+    public const MODULOS_POR_ROL = [
+        'Administrador' => ['productos', 'categorias', 'proveedores', 'clientes', 'facturas', 'ventas', 'usuarios'],
+        'Cajero' => ['clientes', 'facturas', 'ventas'],
+        'Inventario' => ['productos', 'categorias', 'proveedores'],
+    ];
+
     protected $table = 'usuarios';
 
     protected $fillable = [
@@ -50,6 +68,27 @@ class Usuario extends Authenticatable
     public function facturas()
     {
         return $this->hasMany(Factura::class);
+    }
+
+    /**
+     * Indica si el rol del usuario le da acceso al módulo.
+     */
+    public function puedeAccederA(string $modulo): bool
+    {
+        return in_array($modulo, self::MODULOS_POR_ROL[$this->rol] ?? [], true);
+    }
+
+    /**
+     * Roles que tienen acceso al módulo.
+     *
+     * @return list<string>
+     */
+    public static function rolesConAccesoA(string $modulo): array
+    {
+        return array_keys(array_filter(
+            self::MODULOS_POR_ROL,
+            fn (array $modulos) => in_array($modulo, $modulos, true),
+        ));
     }
 
     /**

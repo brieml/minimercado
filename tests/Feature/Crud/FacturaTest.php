@@ -39,7 +39,7 @@ test('los invitados no pueden crear, actualizar ni eliminar facturas', function 
 });
 
 test('crea una factura y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeFactura();
 
     $this->post(route('facturas.store'), $datos)
@@ -54,7 +54,7 @@ test('crea una factura y confirma con un mensaje de sesión', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('facturas.store'), datosValidosDeFactura())
@@ -66,7 +66,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('acepta la fecha de hoy y una fecha pasada', function (string $cuando) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('facturas.store'), datosValidosDeFactura(['fecha' => now()->modify($cuando)->toDateString()]))
         ->assertSessionHasNoErrors();
@@ -75,7 +75,7 @@ test('acepta la fecha de hoy y una fecha pasada', function (string $cuando) {
 })->with(['today', '-1 day', '-1 year']);
 
 test('rechaza datos inválidos al crear una factura', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('facturas.store'), datosValidosDeFactura($cambios))->assertSessionHasErrors($campo);
 
@@ -91,7 +91,7 @@ test('rechaza datos inválidos al crear una factura', function (array $cambios, 
 ]);
 
 test('no acepta un cliente ni un usuario que ya fueron eliminados', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $clienteEliminado = Cliente::factory()->create();
     $usuarioEliminado = Usuario::factory()->create();
     $clienteEliminado->delete();
@@ -106,7 +106,7 @@ test('no acepta un cliente ni un usuario que ya fueron eliminados', function () 
 });
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeFactura(['fecha' => '2999-12-31']);
 
     $this->from(route('facturas.create'))
@@ -122,7 +122,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('el formulario de creación propone la fecha de hoy y al usuario que está atendiendo', function () {
-    $this->actingAs($actual = Usuario::factory()->create());
+    $this->actingAs($actual = Usuario::factory()->administrador()->create());
 
     $this->get(route('facturas.create'))
         ->assertOk()
@@ -131,7 +131,7 @@ test('el formulario de creación propone la fecha de hoy y al usuario que está 
 });
 
 test('muestra el detalle de una factura con sus productos, subtotales y total', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create(['nombre' => 'Juan Pérez']);
     $cajero = Usuario::factory()->create(['nombre' => 'Laura', 'apellido' => 'Gómez']);
     $factura = Factura::factory()->create(['fecha' => '2026-11-03', 'cliente_id' => $cliente->id, 'usuario_id' => $cajero->id]);
@@ -162,7 +162,7 @@ test('muestra el detalle de una factura con sus productos, subtotales y total', 
 });
 
 test('el detalle de una factura sin ventas lo indica y muestra el total en cero', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
 
     $this->get(route('facturas.show', $factura))
@@ -183,14 +183,14 @@ test('calcula el subtotal de cada venta y el total de la factura', function () {
 });
 
 test('el listado ofrece el enlace al detalle de cada factura', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
 
     $this->get(route('facturas.index'))->assertSee(route('facturas.show', $factura), false);
 });
 
 test('actualiza una factura y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create(['fecha' => '2026-10-01']);
     $datos = datosValidosDeFactura(['fecha' => '2026-10-15']);
 
@@ -206,7 +206,7 @@ test('actualiza una factura y confirma con un mensaje de sesión', function () {
 });
 
 test('rechaza datos inválidos al actualizar una factura', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create(['fecha' => '2026-10-01']);
 
     $this->put(route('facturas.update', $factura), datosValidosDeFactura($cambios))->assertSessionHasErrors($campo);
@@ -220,7 +220,7 @@ test('rechaza datos inválidos al actualizar una factura', function (array $camb
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
 
     $this->from(route('facturas.edit', $factura))
@@ -232,7 +232,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina una factura (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
 
     $this->delete(route('facturas.destroy', $factura))
@@ -243,7 +243,7 @@ test('elimina una factura (borrado lógico) y confirma con un mensaje de sesión
 });
 
 test('no elimina una factura que tiene ventas y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
     Venta::factory()->create(['factura_id' => $factura->id]);
 
@@ -256,7 +256,7 @@ test('no elimina una factura que tiene ventas y avisa con un mensaje de error', 
 });
 
 test('mostrar, actualizar o eliminar una factura inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('facturas.show', 999999))->assertNotFound();
     $this->put(route('facturas.update', 999999), datosValidosDeFactura())->assertNotFound();

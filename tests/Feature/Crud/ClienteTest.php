@@ -25,7 +25,7 @@ test('los invitados no pueden crear, actualizar ni eliminar clientes', function 
 });
 
 test('crea un cliente y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('clientes.store'), datosValidosDeCliente())
         ->assertRedirect(route('clientes.index'))
@@ -35,7 +35,7 @@ test('crea un cliente y confirma con un mensaje de sesión', function () {
 });
 
 test('la dirección y el teléfono son opcionales', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('clientes.store'), ['nombre' => 'Cliente General', 'direccion' => '', 'telefono' => ''])
         ->assertSessionHasNoErrors();
@@ -44,7 +44,7 @@ test('la dirección y el teléfono son opcionales', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('clientes.store'), datosValidosDeCliente())
@@ -56,7 +56,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('rechaza datos inválidos al crear un cliente', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('clientes.store'), datosValidosDeCliente($cambios))->assertSessionHasErrors($campo);
 
@@ -70,7 +70,7 @@ test('rechaza datos inválidos al crear un cliente', function (array $cambios, s
 ]);
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->from(route('clientes.create'))
         ->followingRedirects()
@@ -84,7 +84,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('muestra el detalle de un cliente con sus facturas', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create(['nombre' => 'Juan Pérez']);
     Factura::factory()->create(['cliente_id' => $cliente->id, 'fecha' => '2026-11-03']);
 
@@ -97,14 +97,14 @@ test('muestra el detalle de un cliente con sus facturas', function () {
 });
 
 test('el listado ofrece el enlace al detalle de cada cliente', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create();
 
     $this->get(route('clientes.index'))->assertSee(route('clientes.show', $cliente), false);
 });
 
 test('actualiza un cliente y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create(['nombre' => 'Ana Ruiz']);
 
     $this->put(route('clientes.update', $cliente), datosValidosDeCliente(['nombre' => 'Ana María Ruiz']))
@@ -115,7 +115,7 @@ test('actualiza un cliente y confirma con un mensaje de sesión', function () {
 });
 
 test('rechaza datos inválidos al actualizar un cliente', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create(['nombre' => 'Ana Ruiz']);
 
     $this->put(route('clientes.update', $cliente), datosValidosDeCliente($cambios))->assertSessionHasErrors($campo);
@@ -127,7 +127,7 @@ test('rechaza datos inválidos al actualizar un cliente', function (array $cambi
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create();
 
     $this->from(route('clientes.edit', $cliente))
@@ -139,7 +139,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina un cliente (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create();
 
     $this->delete(route('clientes.destroy', $cliente))
@@ -150,7 +150,7 @@ test('elimina un cliente (borrado lógico) y confirma con un mensaje de sesión'
 });
 
 test('no elimina un cliente que tiene facturas y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create();
     Factura::factory()->create(['cliente_id' => $cliente->id]);
 
@@ -163,7 +163,7 @@ test('no elimina un cliente que tiene facturas y avisa con un mensaje de error',
 });
 
 test('mostrar, actualizar o eliminar un cliente inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('clientes.show', 999999))->assertNotFound();
     $this->put(route('clientes.update', 999999), datosValidosDeCliente())->assertNotFound();

@@ -20,7 +20,7 @@ test('los invitados no pueden crear, actualizar ni eliminar categorías', functi
 });
 
 test('crea una categoría y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('categorias.store'), ['descripcion' => 'Lácteos'])
         ->assertRedirect(route('categorias.index'))
@@ -30,7 +30,7 @@ test('crea una categoría y confirma con un mensaje de sesión', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('categorias.store'), ['descripcion' => 'Lácteos'])
@@ -42,7 +42,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('rechaza datos inválidos al crear una categoría', function (array $datos) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
     $this->post(route('categorias.store'), $datos)->assertSessionHasErrors('descripcion');
@@ -55,7 +55,7 @@ test('rechaza datos inválidos al crear una categoría', function (array $datos)
 ]);
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
     $this->from(route('categorias.create'))
@@ -69,7 +69,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('muestra el detalle de una categoría con sus productos', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create(['descripcion' => 'Bebidas']);
     Producto::factory()->create(['categoria_id' => $categoria->id, 'descripcion' => 'Gaseosa 1.5 Litros']);
 
@@ -82,14 +82,14 @@ test('muestra el detalle de una categoría con sus productos', function () {
 });
 
 test('el listado ofrece el enlace al detalle de cada categoría', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create();
 
     $this->get(route('categorias.index'))->assertSee(route('categorias.show', $categoria), false);
 });
 
 test('actualiza una categoría y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
     $this->put(route('categorias.update', $categoria), ['descripcion' => 'Gaseosas'])
@@ -100,7 +100,7 @@ test('actualiza una categoría y confirma con un mensaje de sesión', function (
 });
 
 test('permite guardar una categoría con su misma descripción', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
     $this->put(route('categorias.update', $categoria), ['descripcion' => 'Bebidas'])
@@ -109,7 +109,7 @@ test('permite guardar una categoría con su misma descripción', function () {
 });
 
 test('rechaza datos inválidos al actualizar una categoría', function (array $datos) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Categoria::factory()->create(['descripcion' => 'Aseo']);
     $categoria = Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
@@ -123,7 +123,7 @@ test('rechaza datos inválidos al actualizar una categoría', function (array $d
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create(['descripcion' => 'Bebidas']);
 
     $this->from(route('categorias.edit', $categoria))
@@ -135,7 +135,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina una categoría (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create();
 
     $this->delete(route('categorias.destroy', $categoria))
@@ -146,7 +146,7 @@ test('elimina una categoría (borrado lógico) y confirma con un mensaje de sesi
 });
 
 test('no elimina una categoría que tiene productos y avisa con un mensaje de error', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create();
     Producto::factory()->create(['categoria_id' => $categoria->id]);
 
@@ -159,7 +159,7 @@ test('no elimina una categoría que tiene productos y avisa con un mensaje de er
 });
 
 test('mostrar, editar, actualizar o eliminar una categoría inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('categorias.show', 999999))->assertNotFound();
     $this->put(route('categorias.update', 999999), ['descripcion' => 'Lácteos'])->assertNotFound();

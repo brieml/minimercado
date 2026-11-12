@@ -36,7 +36,7 @@ test('los invitados son redirigidos al login en :dataset', function (string $rec
 })->with('modulos');
 
 test('el listado de :dataset muestra sus registros', function (string $recurso, string $variable, string $modelo, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $registro = $modelo::factory()->create();
 
     $this->get(route("$recurso.index"))
@@ -47,7 +47,7 @@ test('el listado de :dataset muestra sus registros', function (string $recurso, 
 })->with('modulos');
 
 test('el formulario de creación de :dataset se muestra con @csrf y la ruta de store', function (string $recurso) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route("$recurso.create"))
         ->assertOk()
@@ -57,7 +57,7 @@ test('el formulario de creación de :dataset se muestra con @csrf y la ruta de s
 })->with('modulos');
 
 test('el formulario de edición de :dataset se muestra con sus datos, @method(PUT) y la ruta de update', function (string $recurso, string $variable, string $modelo, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $registro = $modelo::factory()->create();
 
     $this->get(route("$recurso.edit", $registro))
@@ -70,13 +70,13 @@ test('el formulario de edición de :dataset se muestra con sus datos, @method(PU
 })->with('modulos');
 
 test('editar un registro inexistente de :dataset responde 404', function (string $recurso) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route("$recurso.edit", 999999))->assertNotFound();
 })->with('modulos');
 
 test('el listado de :dataset incluye el formulario @method(DELETE) por cada registro', function (string $recurso, string $variable, string $modelo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $registro = $modelo::factory()->create();
 
     $this->get(route("$recurso.index"))
@@ -100,7 +100,7 @@ test('la ruta de proveedores usa el parámetro singular {proveedor}', function (
 });
 
 test('el formulario de productos lista las categorías y los proveedores', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $categoria = Categoria::factory()->create();
     $proveedor = Proveedor::factory()->create();
 
@@ -112,7 +112,7 @@ test('el formulario de productos lista las categorías y los proveedores', funct
 });
 
 test('la edición de un producto deja seleccionadas su categoría y su proveedor', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $producto = Producto::factory()->create();
 
     $this->get(route('productos.edit', $producto))
@@ -121,7 +121,7 @@ test('la edición de un producto deja seleccionadas su categoría y su proveedor
 });
 
 test('el formulario de facturas lista los clientes y los usuarios', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create();
     $usuario = Usuario::factory()->create();
 
@@ -133,7 +133,7 @@ test('el formulario de facturas lista los clientes y los usuarios', function () 
 });
 
 test('el formulario de ventas lista las facturas y los productos', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $factura = Factura::factory()->create();
     $producto = Producto::factory()->create();
 
@@ -145,7 +145,7 @@ test('el formulario de ventas lista las facturas y los productos', function () {
 });
 
 test('el formulario de usuarios ofrece los roles y los estados', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $respuesta = $this->get(route('usuarios.create'))
         ->assertViewHas('roles', Usuario::ROLES)
@@ -157,7 +157,7 @@ test('el formulario de usuarios ofrece los roles y los estados', function () {
 });
 
 test('la edición de un usuario no expone su contraseña', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $usuario = Usuario::factory()->create();
 
     $this->get(route('usuarios.edit', $usuario))
@@ -166,13 +166,13 @@ test('la edición de un usuario no expone su contraseña', function () {
 });
 
 test('los listados vacíos muestran un mensaje en lugar de la tabla vacía', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('productos.index'))->assertSee('No hay productos registrados.');
 });
 
 test('los registros eliminados lógicamente no aparecen en el listado', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $visible = Categoria::factory()->create();
     $eliminada = Categoria::factory()->create();
     $eliminada->delete();
@@ -183,7 +183,7 @@ test('los registros eliminados lógicamente no aparecen en el listado', function
 });
 
 test('las páginas autenticadas incluyen el menú hacia todos los módulos y el cierre de sesión', function () {
-    $this->actingAs($usuario = Usuario::factory()->create());
+    $this->actingAs($usuario = Usuario::factory()->administrador()->create());
 
     $respuesta = $this->get(route('dashboard'))->assertOk();
 
@@ -197,7 +197,7 @@ test('las páginas autenticadas incluyen el menú hacia todos los módulos y el 
 });
 
 test('el menú marca como activo el módulo que se está visitando', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $html = $this->get(route('clientes.index'))->getContent();
 

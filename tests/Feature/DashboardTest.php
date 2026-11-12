@@ -24,8 +24,8 @@ test('authenticated users can visit the dashboard', function () {
     $response->assertStatus(200);
 });
 
-test('el dashboard entrega el total de registros de cada módulo a la vista', function () {
-    $this->actingAs(Usuario::factory()->create());
+test('el dashboard entrega el total de registros de cada módulo al administrador', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
     Producto::factory()->count(3)->create();
     Cliente::factory()->count(2)->create();
     Venta::factory()->create();
@@ -34,13 +34,15 @@ test('el dashboard entrega el total de registros de cada módulo a la vista', fu
     $this->get(route('dashboard'))
         ->assertOk()
         ->assertViewIs('dashboard')
-        ->assertViewHas('productos', 4)
-        ->assertViewHas('clientes', 3)
-        ->assertViewHas('categorias', 4)
-        ->assertViewHas('proveedores', 4)
-        ->assertViewHas('facturas', Factura::count())
-        ->assertViewHas('ventas', 1)
-        ->assertViewHas('usuarios', Usuario::count());
+        ->assertViewHas('totales', fn ($totales) => $totales->all() === [
+            'productos' => 4,
+            'categorias' => 4,
+            'proveedores' => 4,
+            'clientes' => 3,
+            'facturas' => Factura::count(),
+            'ventas' => 1,
+            'usuarios' => Usuario::count(),
+        ]);
 });
 
 test('el dashboard muestra el nombre y el rol del usuario con sesión iniciada', function () {

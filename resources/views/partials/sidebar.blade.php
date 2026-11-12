@@ -1,3 +1,25 @@
+@php
+    $usuarioActual = auth()->user();
+
+    // Grupo del menú => [módulo (nombre del recurso en las rutas), etiqueta, icono].
+    // Cada rol solo ve los módulos que tiene en Usuario::MODULOS_POR_ROL.
+    $grupos = [
+        'Inventario' => [
+            ['productos', 'Productos', 'cube'],
+            ['categorias', 'Categorías', 'tag'],
+            ['proveedores', 'Proveedores', 'truck'],
+        ],
+        'Ventas' => [
+            ['clientes', 'Clientes', 'user-group'],
+            ['facturas', 'Facturas', 'document-text'],
+            ['ventas', 'Ventas', 'shopping-cart'],
+        ],
+        'Administración' => [
+            ['usuarios', 'Usuarios', 'users'],
+        ],
+    ];
+@endphp
+
 <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-slate-900/50 lg:hidden" aria-hidden="true"></div>
 
 <aside id="sidebar" aria-label="Navegación principal"
@@ -14,31 +36,20 @@
             Dashboard
         </x-nav-link>
 
-        <p class="px-3 pb-1 pt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">Inventario</p>
-        <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')" icon="cube">
-            Productos
-        </x-nav-link>
-        <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')" icon="tag">
-            Categorías
-        </x-nav-link>
-        <x-nav-link :href="route('proveedores.index')" :active="request()->routeIs('proveedores.*')" icon="truck">
-            Proveedores
-        </x-nav-link>
+        @foreach ($grupos as $titulo => $modulos)
+            @php
+                $visibles = array_filter($modulos, fn (array $modulo) => $usuarioActual->puedeAccederA($modulo[0]));
+            @endphp
 
-        <p class="px-3 pb-1 pt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">Ventas</p>
-        <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')" icon="user-group">
-            Clientes
-        </x-nav-link>
-        <x-nav-link :href="route('facturas.index')" :active="request()->routeIs('facturas.*')" icon="document-text">
-            Facturas
-        </x-nav-link>
-        <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')" icon="shopping-cart">
-            Ventas
-        </x-nav-link>
+            @if ($visibles)
+                <p class="px-3 pb-1 pt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $titulo }}</p>
 
-        <p class="px-3 pb-1 pt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">Administración</p>
-        <x-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')" icon="users">
-            Usuarios
-        </x-nav-link>
+                @foreach ($visibles as [$recurso, $etiqueta, $icono])
+                    <x-nav-link :href="route($recurso.'.index')" :active="request()->routeIs($recurso.'.*')" :icon="$icono">
+                        {{ $etiqueta }}
+                    </x-nav-link>
+                @endforeach
+            @endif
+        @endforeach
     </nav>
 </aside>

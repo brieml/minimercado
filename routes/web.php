@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,14 +27,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    Route::resource('usuarios', UsuarioController::class);
-    Route::resource('clientes', ClienteController::class);
-    Route::resource('categorias', CategoriaController::class);
+    // Cada módulo solo es accesible para los roles que lo tienen en Usuario::MODULOS_POR_ROL.
+    $soloRolesDe = fn (string $modulo): string => 'role:'.implode(',', Usuario::rolesConAccesoA($modulo));
+
+    Route::resource('usuarios', UsuarioController::class)
+        ->middleware($soloRolesDe('usuarios'));
+
+    Route::resource('clientes', ClienteController::class)
+        ->middleware($soloRolesDe('clientes'));
+
+    Route::resource('categorias', CategoriaController::class)
+        ->middleware($soloRolesDe('categorias'));
+
     Route::resource('proveedores', ProveedorController::class)
-        ->parameters(['proveedores' => 'proveedor']);
-    Route::resource('productos', ProductoController::class);
-    Route::resource('facturas', FacturaController::class);
-    Route::resource('ventas', VentaController::class);
+        ->parameters(['proveedores' => 'proveedor'])
+        ->middleware($soloRolesDe('proveedores'));
+
+    Route::resource('productos', ProductoController::class)
+        ->middleware($soloRolesDe('productos'));
+
+    Route::resource('facturas', FacturaController::class)
+        ->middleware($soloRolesDe('facturas'));
+
+    Route::resource('ventas', VentaController::class)
+        ->middleware($soloRolesDe('ventas'));
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');

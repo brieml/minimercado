@@ -16,7 +16,7 @@
                 <td>{{ $venta->id }}</td>
                 <td class="whitespace-nowrap">
                     @if ($venta->factura)
-                        #{{ $venta->factura->id }} · {{ $venta->factura->fecha->format('d/m/Y') }}
+                        <x-module-link module="facturas" :href="route('facturas.show', $venta->factura->id)">#{{ $venta->factura->id }} · {{ $venta->factura->fecha->format('d/m/Y') }}</x-module-link>
                     @else
                         —
                     @endif

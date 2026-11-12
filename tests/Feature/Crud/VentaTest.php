@@ -39,7 +39,7 @@ test('los invitados no pueden crear, actualizar ni eliminar ventas', function ()
 });
 
 test('crea una venta y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeVenta();
 
     $this->post(route('ventas.store'), $datos)
@@ -54,7 +54,7 @@ test('crea una venta y confirma con un mensaje de sesión', function () {
 });
 
 test('el listado muestra el mensaje de éxito después de crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->followingRedirects()
         ->post(route('ventas.store'), datosValidosDeVenta())
@@ -66,7 +66,7 @@ test('el listado muestra el mensaje de éxito después de crear', function () {
 });
 
 test('acepta cantidades enteras, con hasta tres decimales y el máximo que cabe en la columna', function (string $cantidad) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('ventas.store'), datosValidosDeVenta(['cantidad' => $cantidad]))
         ->assertSessionHasNoErrors();
@@ -76,7 +76,7 @@ test('acepta cantidades enteras, con hasta tres decimales y el máximo que cabe 
 })->with(['1', '0.001', '2.5', '10.250', '9999999.999']);
 
 test('rechaza datos inválidos al crear una venta', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('ventas.store'), datosValidosDeVenta($cambios))->assertSessionHasErrors($campo);
 
@@ -95,14 +95,14 @@ test('rechaza datos inválidos al crear una venta', function (array $cambios, st
 ]);
 
 test('explica con un mensaje claro que la cantidad no admite más de tres decimales', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->post(route('ventas.store'), datosValidosDeVenta(['cantidad' => '1.2345']))
         ->assertSessionHasErrors(['cantidad' => 'La cantidad no puede tener más de 3 decimales.']);
 });
 
 test('no acepta una factura ni un producto que ya fueron eliminados', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $facturaEliminada = Factura::factory()->create();
     $productoEliminado = Producto::factory()->create();
     $facturaEliminada->delete();
@@ -117,7 +117,7 @@ test('no acepta una factura ni un producto que ya fueron eliminados', function (
 });
 
 test('muestra los errores y conserva lo escrito cuando falla la validación al crear', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $datos = datosValidosDeVenta(['cantidad' => '0']);
 
     $this->from(route('ventas.create'))
@@ -133,7 +133,7 @@ test('muestra los errores y conserva lo escrito cuando falla la validación al c
 });
 
 test('pide elegir factura y producto cuando se envían vacíos', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->from(route('ventas.create'))
         ->followingRedirects()
@@ -144,7 +144,7 @@ test('pide elegir factura y producto cuando se envían vacíos', function () {
 });
 
 test('muestra el detalle de una venta con su factura, cliente, producto y subtotal', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $cliente = Cliente::factory()->create(['nombre' => 'Juan Pérez']);
     $factura = Factura::factory()->create(['fecha' => '2026-11-03', 'cliente_id' => $cliente->id]);
     $producto = Producto::factory()->create(['descripcion' => 'Arroz Diana 500 g', 'precio' => 2500.50]);
@@ -168,14 +168,14 @@ test('muestra el detalle de una venta con su factura, cliente, producto y subtot
 });
 
 test('el listado ofrece el enlace al detalle de cada venta', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create();
 
     $this->get(route('ventas.index'))->assertSee(route('ventas.show', $venta), false);
 });
 
 test('actualiza una venta y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create(['cantidad' => 1]);
     $datos = datosValidosDeVenta(['cantidad' => '7.250']);
 
@@ -191,7 +191,7 @@ test('actualiza una venta y confirma con un mensaje de sesión', function () {
 });
 
 test('rechaza datos inválidos al actualizar una venta', function (array $cambios, string $campo) {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create(['cantidad' => 3]);
 
     $this->put(route('ventas.update', $venta), datosValidosDeVenta($cambios))->assertSessionHasErrors($campo);
@@ -205,7 +205,7 @@ test('rechaza datos inválidos al actualizar una venta', function (array $cambio
 ]);
 
 test('muestra los errores cuando falla la validación al actualizar', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create();
 
     $this->from(route('ventas.edit', $venta))
@@ -217,7 +217,7 @@ test('muestra los errores cuando falla la validación al actualizar', function (
 });
 
 test('elimina una venta (borrado lógico) y confirma con un mensaje de sesión', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create();
 
     $this->delete(route('ventas.destroy', $venta))
@@ -228,7 +228,7 @@ test('elimina una venta (borrado lógico) y confirma con un mensaje de sesión',
 });
 
 test('al eliminar su única venta, la factura y el producto vuelven a poder eliminarse', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
     $venta = Venta::factory()->create();
 
     $this->delete(route('facturas.destroy', $venta->factura_id))->assertSessionHas('error');
@@ -241,7 +241,7 @@ test('al eliminar su única venta, la factura y el producto vuelven a poder elim
 });
 
 test('mostrar, actualizar o eliminar una venta inexistente responde 404', function () {
-    $this->actingAs(Usuario::factory()->create());
+    $this->actingAs(Usuario::factory()->administrador()->create());
 
     $this->get(route('ventas.show', 999999))->assertNotFound();
     $this->put(route('ventas.update', 999999), datosValidosDeVenta())->assertNotFound();

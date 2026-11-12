@@ -14,14 +14,14 @@
             <x-detail label="Fecha">{{ $factura->fecha->format('d/m/Y') }}</x-detail>
             <x-detail label="Cliente">
                 @if ($factura->cliente)
-                    <a href="{{ route('clientes.show', $factura->cliente->id) }}" class="text-blue-600 hover:underline">{{ $factura->cliente->nombre }}</a>
+                    <x-module-link module="clientes" :href="route('clientes.show', $factura->cliente->id)">{{ $factura->cliente->nombre }}</x-module-link>
                 @else
                     —
                 @endif
             </x-detail>
             <x-detail label="Atendido por">
                 @if ($factura->usuario)
-                    <a href="{{ route('usuarios.show', $factura->usuario->id) }}" class="text-blue-600 hover:underline">{{ $factura->usuario->nombre_completo }}</a>
+                    <x-module-link module="usuarios" :href="route('usuarios.show', $factura->usuario->id)">{{ $factura->usuario->nombre_completo }}</x-module-link>
                 @else
                     —
                 @endif
@@ -40,7 +40,7 @@
             <tr>
                 <td class="font-medium text-slate-900">
                     @if ($venta->producto)
-                        <a href="{{ route('productos.show', $venta->producto->id) }}" class="text-blue-600 hover:underline">{{ $venta->producto->descripcion }}</a>
+                        <x-module-link module="productos" :href="route('productos.show', $venta->producto->id)">{{ $venta->producto->descripcion }}</x-module-link>
                     @else
                         —
                     @endif
