@@ -26,6 +26,9 @@
                 <td class="whitespace-nowrap">{{ number_format($venta->cantidad, 3, ',', '.') }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('ventas.show', $venta->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('ventas.edit', $venta->id)" variant="warning" size="sm">
                             Editar
                         </x-button>

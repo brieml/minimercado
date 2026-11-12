@@ -4,6 +4,8 @@
     ]);
 @endphp
 
+<x-form.errors />
+
 <div class="grid gap-5 sm:grid-cols-2">
     <div class="sm:col-span-2">
         <x-form.select name="factura_id" label="Factura" :options="$opcionesFactura" :selected="$venta->factura_id ?? null" required />

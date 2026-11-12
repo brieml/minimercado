@@ -6,7 +6,7 @@
     <x-page-header title="Editar Venta" subtitle="Modifica los datos de la venta seleccionada" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('ventas.update', $venta) }}" method="POST">
+        <form action="{{ route('ventas.update', $venta) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 

@@ -6,7 +6,7 @@
     <x-page-header title="Crear Venta" subtitle="Registra un producto vendido dentro de una factura" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('ventas.store') }}" method="POST">
+        <form action="{{ route('ventas.store') }}" method="POST" novalidate>
             @csrf
 
             @include('ventas.form')
