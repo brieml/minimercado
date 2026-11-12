@@ -6,7 +6,7 @@
     <x-page-header title="Crear Categoría" subtitle="Registra una nueva categoría de productos" />
 
     <x-card class="max-w-xl">
-        <form action="{{ route('categorias.store') }}" method="POST">
+        <form action="{{ route('categorias.store') }}" method="POST" novalidate>
             @csrf
 
             @include('categorias.form')

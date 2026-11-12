@@ -17,6 +17,9 @@
                 <td class="font-medium text-slate-900">{{ $categoria->descripcion }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('categorias.show', $categoria->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('categorias.edit', $categoria->id)" variant="warning" size="sm">
                             Editar
                         </x-button>
