@@ -21,3 +21,16 @@ document.addEventListener('keydown', (event) => {
         setSidebarOpen(false);
     }
 });
+
+document.querySelectorAll('[data-flash]').forEach((mensaje) => {
+    const cerrar = () => {
+        mensaje.classList.add('translate-x-4', 'opacity-0');
+        setTimeout(() => mensaje.remove(), 300);
+    };
+
+    mensaje.querySelector('[data-flash-close]')?.addEventListener('click', cerrar);
+
+    if (mensaje.dataset.flash === 'success') {
+        setTimeout(cerrar, 6000);
+    }
+});
