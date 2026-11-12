@@ -6,7 +6,7 @@
     <x-page-header title="Crear Factura" subtitle="Registra el encabezado de una nueva venta" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('facturas.store') }}" method="POST">
+        <form action="{{ route('facturas.store') }}" method="POST" novalidate>
             @csrf
 
             @include('facturas.form')

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Factura;
 use App\Models\Usuario;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class FacturaController extends Controller
@@ -34,17 +37,23 @@ class FacturaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $datos = $request->validate($this->reglas());
+
+        Factura::create($datos);
+
+        return redirect()->route('facturas.index')->with('success', 'Factura creada correctamente.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
-        //
+        $factura = Factura::with(['cliente', 'usuario', 'ventas.producto'])->findOrFail($id);
+
+        return view('facturas.show', compact('factura'));
     }
 
     /**
@@ -62,16 +71,46 @@ class FacturaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
-        //
+        $factura = Factura::findOrFail($id);
+
+        $factura->update($request->validate($this->reglas()));
+
+        return redirect()->route('facturas.index')->with('success', 'Factura actualizada correctamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
-        //
+        $factura = Factura::findOrFail($id);
+
+        if ($factura->ventas()->exists()) {
+            return redirect()->route('facturas.index')->with('error', 'No se puede eliminar la factura porque tiene ventas relacionadas.');
+        }
+
+        try {
+            $factura->delete();
+        } catch (Exception $e) {
+            return redirect()->route('facturas.index')->with('error', 'No se pudo eliminar la factura.');
+        }
+
+        return redirect()->route('facturas.index')->with('success', 'Factura eliminada correctamente.');
+    }
+
+    /**
+     * Reglas de validación compartidas por store y update.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    private function reglas(): array
+    {
+        return [
+            'fecha' => ['required', 'date', 'before_or_equal:today'],
+            'cliente_id' => ['required', Rule::exists('clientes', 'id')->whereNull('deleted_at')],
+            'usuario_id' => ['required', Rule::exists('usuarios', 'id')->whereNull('deleted_at')],
+        ];
     }
 }

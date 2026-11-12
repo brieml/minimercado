@@ -6,7 +6,7 @@
     <x-page-header title="Editar Factura" subtitle="Modifica los datos de la factura seleccionada" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('facturas.update', $factura) }}" method="POST">
+        <form action="{{ route('facturas.update', $factura) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 

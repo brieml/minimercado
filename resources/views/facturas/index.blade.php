@@ -19,6 +19,9 @@
                 <td>{{ $factura->usuario?->nombre_completo ?? '—' }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('facturas.show', $factura->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('facturas.edit', $factura->id)" variant="warning" size="sm">
                             Editar
                         </x-button>

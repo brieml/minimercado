@@ -1,3 +1,5 @@
+<x-form.errors />
+
 <div class="grid gap-5 sm:grid-cols-2">
     <div class="sm:col-span-2 sm:max-w-xs">
         <x-form.input name="fecha" label="Fecha" type="date"
@@ -8,5 +10,5 @@
         :selected="$factura->cliente_id ?? null" required />
 
     <x-form.select name="usuario_id" label="Atendido por" :options="$usuarios->pluck('nombre_completo', 'id')"
-        :selected="$factura->usuario_id ?? null" required />
+        :selected="$factura->usuario_id ?? auth()->id()" required />
 </div>
