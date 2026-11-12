@@ -27,6 +27,9 @@
                     —
                 @endif
             </x-detail>
+            <x-detail label="Cantidad en las ventas">
+                {{ $producto->tiene_gramaje ? 'Con gramaje: admite decimales' : 'Por unidades: solo números enteros' }}
+            </x-detail>
             <x-detail label="Ventas registradas">{{ $producto->ventas_count }}</x-detail>
             <x-detail label="Registrado">{{ $producto->created_at?->format('d/m/Y H:i') ?? '—' }}</x-detail>
         </dl>

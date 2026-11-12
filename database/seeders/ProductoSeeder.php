@@ -24,14 +24,15 @@ class ProductoSeeder extends Seeder
 
             // categoria_id: 1 Bebidas, 2 Alimentos, 3 Snacks, 4 Aseo, 5 Cuidado personal (CategoriaSeeder)
             // proveedor_id: 1 Distribuidora La Economía, 2 Distribuciones Sucre, 3 Comercializadora Caribe (ProveedorSeeder)
+            // tiene_gramaje: se vende por peso, por eso solo estos productos admiten decimales en la cantidad.
             $datos = [
-                ['id' => 1, 'descripcion' => 'Gaseosa 1.5 Litros', 'precio' => 6500, 'categoria_id' => 1, 'proveedor_id' => 1],
-                ['id' => 2, 'descripcion' => 'Agua 600 ml', 'precio' => 2500, 'categoria_id' => 1, 'proveedor_id' => 1],
-                ['id' => 3, 'descripcion' => 'Arroz 1 Kg', 'precio' => 4500, 'categoria_id' => 2, 'proveedor_id' => 2],
-                ['id' => 4, 'descripcion' => 'Pan tajado', 'precio' => 5500, 'categoria_id' => 2, 'proveedor_id' => 2],
-                ['id' => 5, 'descripcion' => 'Papas fritas', 'precio' => 2500, 'categoria_id' => 3, 'proveedor_id' => 3],
-                ['id' => 6, 'descripcion' => 'Detergente 500 g', 'precio' => 4800, 'categoria_id' => 4, 'proveedor_id' => 3],
-                ['id' => 7, 'descripcion' => 'Jabón de baño', 'precio' => 3200, 'categoria_id' => 5, 'proveedor_id' => 1]
+                ['id' => 1, 'descripcion' => 'Gaseosa 1.5 Litros', 'precio' => 6500, 'tiene_gramaje' => false, 'categoria_id' => 1, 'proveedor_id' => 1],
+                ['id' => 2, 'descripcion' => 'Agua 600 ml', 'precio' => 2500, 'tiene_gramaje' => false, 'categoria_id' => 1, 'proveedor_id' => 1],
+                ['id' => 3, 'descripcion' => 'Arroz 1 Kg', 'precio' => 4500, 'tiene_gramaje' => true, 'categoria_id' => 2, 'proveedor_id' => 2],
+                ['id' => 4, 'descripcion' => 'Pan tajado', 'precio' => 5500, 'tiene_gramaje' => false, 'categoria_id' => 2, 'proveedor_id' => 2],
+                ['id' => 5, 'descripcion' => 'Papas fritas', 'precio' => 2500, 'tiene_gramaje' => false, 'categoria_id' => 3, 'proveedor_id' => 3],
+                ['id' => 6, 'descripcion' => 'Detergente 500 g', 'precio' => 4800, 'tiene_gramaje' => true, 'categoria_id' => 4, 'proveedor_id' => 3],
+                ['id' => 7, 'descripcion' => 'Jabón de baño', 'precio' => 3200, 'tiene_gramaje' => false, 'categoria_id' => 5, 'proveedor_id' => 1]
             ];
 
             // //Insertar los datos
@@ -40,6 +41,7 @@ class ProductoSeeder extends Seeder
                     'id' => $reg['id'],
                     'descripcion' => $reg['descripcion'],
                     'precio' => $reg['precio'],
+                    'tiene_gramaje' => $reg['tiene_gramaje'],
                     'categoria_id' => $reg['categoria_id'],
                     'proveedor_id' => $reg['proveedor_id'],
                     //Fecha y hora de Inserción y Actualización

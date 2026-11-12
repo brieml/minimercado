@@ -14,7 +14,12 @@
         @forelse ($productos as $producto)
             <tr>
                 <td>{{ $producto->id }}</td>
-                <td class="font-medium text-slate-900">{{ $producto->descripcion }}</td>
+                <td class="font-medium text-slate-900">
+                    {{ $producto->descripcion }}
+                    @if ($producto->tiene_gramaje)
+                        <x-badge color="amber" class="ml-1 align-middle">Gramaje</x-badge>
+                    @endif
+                </td>
                 <td class="whitespace-nowrap">$ {{ number_format($producto->precio, 2, ',', '.') }}</td>
                 <td>{{ $producto->categoria?->descripcion ?? '—' }}</td>
                 <td>{{ $producto->proveedor?->nombre ?? '—' }}</td>

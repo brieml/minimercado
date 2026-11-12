@@ -71,6 +71,90 @@ test('acepta precios enteros, con uno o dos decimales y el máximo que cabe en l
         ->and((float) Producto::first()->precio)->toBe((float) $precio);
 })->with(['0', '1500', '1500.5', '1500.50', '9999999999.99']);
 
+/**
+ * Indica si el HTML trae la casilla "con gramaje" marcada.
+ */
+function casillaDeGramajeMarcada(string $html): bool
+{
+    return preg_match('/<input[^>]*name="tiene_gramaje"[^>]*type="checkbox"[^>]*\schecked[\s>=]/', $html) === 1;
+}
+
+test('guarda si el producto se vende por gramaje', function (array $cambios, bool $esperado) {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+
+    $this->post(route('productos.store'), datosValidosDeProducto($cambios))->assertSessionHasNoErrors();
+
+    expect(Producto::firstOrFail()->tiene_gramaje)->toBe($esperado);
+})->with([
+    'casilla marcada' => [['tiene_gramaje' => '1'], true],
+    'casilla desmarcada' => [['tiene_gramaje' => '0'], false],
+    'sin enviar el campo' => [[], false],
+]);
+
+test('rechaza un gramaje que no es verdadero ni falso', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+
+    $this->post(route('productos.store'), datosValidosDeProducto(['tiene_gramaje' => 'quizás']))
+        ->assertSessionHasErrors('tiene_gramaje');
+
+    expect(Producto::count())->toBe(0);
+});
+
+test('puede poner y quitar el gramaje al actualizar un producto', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+    $producto = Producto::factory()->create();
+
+    $this->put(route('productos.update', $producto), datosValidosDeProducto(['tiene_gramaje' => '1']));
+    expect($producto->fresh()->tiene_gramaje)->toBeTrue();
+
+    $this->put(route('productos.update', $producto), datosValidosDeProducto(['tiene_gramaje' => '0']));
+    expect($producto->fresh()->tiene_gramaje)->toBeFalse();
+});
+
+test('al actualizar sin enviar la casilla de gramaje el producto queda sin gramaje', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+    $producto = Producto::factory()->conGramaje()->create();
+
+    $this->put(route('productos.update', $producto), datosValidosDeProducto())->assertSessionHasNoErrors();
+
+    expect($producto->fresh()->tiene_gramaje)->toBeFalse();
+});
+
+test('el formulario ofrece la casilla de gramaje y la conserva cuando falla la validación', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+
+    $nuevo = $this->get(route('productos.create'))->assertOk()->assertSee('name="tiene_gramaje"', false)->getContent();
+    expect(casillaDeGramajeMarcada($nuevo))->toBeFalse();
+
+    $conErrores = $this->from(route('productos.create'))
+        ->followingRedirects()
+        ->post(route('productos.store'), datosValidosDeProducto(['descripcion' => '', 'tiene_gramaje' => '1']))
+        ->getContent();
+    expect(casillaDeGramajeMarcada($conErrores))->toBeTrue();
+});
+
+test('la edición de un producto con gramaje trae la casilla marcada', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+    $conGramaje = Producto::factory()->conGramaje()->create();
+    $porUnidad = Producto::factory()->create();
+
+    expect(casillaDeGramajeMarcada($this->get(route('productos.edit', $conGramaje))->getContent()))->toBeTrue()
+        ->and(casillaDeGramajeMarcada($this->get(route('productos.edit', $porUnidad))->getContent()))->toBeFalse();
+});
+
+test('el listado y el detalle indican si el producto se vende por gramaje', function () {
+    $this->actingAs(Usuario::factory()->administrador()->create());
+    $porUnidad = Producto::factory()->create(['descripcion' => 'Gaseosa']);
+
+    $this->get(route('productos.index'))->assertDontSee('Gramaje');
+    $this->get(route('productos.show', $porUnidad))->assertSee('Por unidades: solo números enteros');
+
+    $conGramaje = Producto::factory()->conGramaje()->create(['descripcion' => 'Arroz']);
+
+    $this->get(route('productos.index'))->assertSee('Gramaje');
+    $this->get(route('productos.show', $conGramaje))->assertSee('Con gramaje: admite decimales');
+});
+
 test('rechaza datos inválidos al crear un producto', function (array $cambios, string $campo) {
     $this->actingAs(Usuario::factory()->administrador()->create());
 

@@ -16,8 +16,13 @@ class Producto extends Model
     protected $fillable = [
         'descripcion',
         'precio',
+        'tiene_gramaje',
         'categoria_id',
         'proveedor_id',
+    ];
+
+    protected $casts = [
+        'tiene_gramaje' => 'boolean',
     ];
 
     public function categoria()

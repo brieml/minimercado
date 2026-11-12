@@ -68,7 +68,7 @@ test('DatabaseSeeder siembra los usuarios activos con la contraseña cifrada', f
     }
 });
 
-test('DatabaseSeeder siembra los productos con su categoría y proveedor', function () {
+test('DatabaseSeeder siembra los productos con su categoría, proveedor y si se venden por gramaje', function () {
     $this->seed(DatabaseSeeder::class);
 
     $productos = Producto::with(['categoria', 'proveedor'])->orderBy('id')->get();
@@ -77,16 +77,17 @@ test('DatabaseSeeder siembra los productos con su categoría y proveedor', funct
         $producto->id,
         $producto->descripcion,
         (float) $producto->precio,
+        $producto->tiene_gramaje,
         $producto->categoria->descripcion,
         $producto->proveedor->nombre,
     ])->all())->toEqual([
-        [1, 'Gaseosa 1.5 Litros', 6500, 'Bebidas', 'Distribuidora La Economía'],
-        [2, 'Agua 600 ml', 2500, 'Bebidas', 'Distribuidora La Economía'],
-        [3, 'Arroz 1 Kg', 4500, 'Alimentos', 'Distribuciones Sucre'],
-        [4, 'Pan tajado', 5500, 'Alimentos', 'Distribuciones Sucre'],
-        [5, 'Papas fritas', 2500, 'Snacks', 'Comercializadora Caribe'],
-        [6, 'Detergente 500 g', 4800, 'Aseo', 'Comercializadora Caribe'],
-        [7, 'Jabón de baño', 3200, 'Cuidado personal', 'Distribuidora La Economía'],
+        [1, 'Gaseosa 1.5 Litros', 6500, false, 'Bebidas', 'Distribuidora La Economía'],
+        [2, 'Agua 600 ml', 2500, false, 'Bebidas', 'Distribuidora La Economía'],
+        [3, 'Arroz 1 Kg', 4500, true, 'Alimentos', 'Distribuciones Sucre'],
+        [4, 'Pan tajado', 5500, false, 'Alimentos', 'Distribuciones Sucre'],
+        [5, 'Papas fritas', 2500, false, 'Snacks', 'Comercializadora Caribe'],
+        [6, 'Detergente 500 g', 4800, true, 'Aseo', 'Comercializadora Caribe'],
+        [7, 'Jabón de baño', 3200, false, 'Cuidado personal', 'Distribuidora La Economía'],
     ]);
 });
 

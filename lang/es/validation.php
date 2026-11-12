@@ -182,6 +182,9 @@ return [
         'cantidad' => [
             'decimal' => 'La cantidad no puede tener más de 3 decimales.',
         ],
+        'tiene_gramaje' => [
+            'boolean' => 'Indica si el producto se vende por gramaje (sí o no).',
+        ],
     ],
 
     /*
@@ -212,6 +215,7 @@ return [
         'usuario_id' => 'usuario',
         'factura_id' => 'factura',
         'producto_id' => 'producto',
+        'tiene_gramaje' => 'gramaje',
     ],
 
 ];

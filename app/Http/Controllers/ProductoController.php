@@ -39,9 +39,7 @@ class ProductoController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $datos = $request->validate($this->reglas());
-
-        Producto::create($datos);
+        Producto::create($this->datosValidados($request));
 
         return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
     }
@@ -75,7 +73,7 @@ class ProductoController extends Controller
     {
         $producto = Producto::findOrFail($id);
 
-        $producto->update($request->validate($this->reglas()));
+        $producto->update($this->datosValidados($request));
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
@@ -101,6 +99,21 @@ class ProductoController extends Controller
     }
 
     /**
+     * Valida el formulario y devuelve los datos listos para guardar.
+     *
+     * @return array<string, mixed>
+     */
+    private function datosValidados(Request $request): array
+    {
+        $datos = $request->validate($this->reglas());
+
+        // La casilla "con gramaje" llega como 0 o 1 (o no llega en una petición que no la incluya).
+        $datos['tiene_gramaje'] = $request->boolean('tiene_gramaje');
+
+        return $datos;
+    }
+
+    /**
      * Reglas de validación compartidas por store y update.
      *
      * @return array<string, array<int, mixed>>
@@ -110,6 +123,7 @@ class ProductoController extends Controller
         return [
             'descripcion' => ['required', 'string', 'max:150'],
             'precio' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
+            'tiene_gramaje' => ['sometimes', 'boolean'],
             'categoria_id' => ['required', Rule::exists('categorias', 'id')->whereNull('deleted_at')],
             'proveedor_id' => ['required', Rule::exists('proveedores', 'id')->whereNull('deleted_at')],
         ];
