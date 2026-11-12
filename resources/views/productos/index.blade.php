@@ -20,6 +20,9 @@
                 <td>{{ $producto->proveedor?->nombre ?? '—' }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('productos.show', $producto->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('productos.edit', $producto->id)" variant="warning" size="sm">
                             Editar
                         </x-button>

@@ -6,7 +6,7 @@
     <x-page-header title="Crear Producto" subtitle="Registra un nuevo producto en el inventario" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('productos.store') }}" method="POST">
+        <form action="{{ route('productos.store') }}" method="POST" novalidate>
             @csrf
 
             @include('productos.form')

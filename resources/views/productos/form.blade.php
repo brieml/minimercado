@@ -1,3 +1,5 @@
+<x-form.errors />
+
 <div class="grid gap-5 sm:grid-cols-2">
     <div class="sm:col-span-2">
         <x-form.input name="descripcion" label="Descripción" :value="$producto->descripcion ?? null" maxlength="150" required />
