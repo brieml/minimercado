@@ -6,7 +6,7 @@
     <x-page-header title="Editar Usuario" subtitle="Modifica los datos del usuario seleccionado" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('usuarios.update', $usuario) }}" method="POST">
+        <form action="{{ route('usuarios.update', $usuario) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 

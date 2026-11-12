@@ -6,7 +6,7 @@
     <x-page-header title="Crear Usuario" subtitle="Registra una nueva persona con acceso al sistema" />
 
     <x-card class="max-w-3xl">
-        <form action="{{ route('usuarios.store') }}" method="POST">
+        <form action="{{ route('usuarios.store') }}" method="POST" novalidate>
             @csrf
 
             @include('usuarios.form')

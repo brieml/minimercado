@@ -22,6 +22,9 @@
                 </td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('usuarios.show', $usuario->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('usuarios.edit', $usuario->id)" variant="warning" size="sm">
                             Editar
                         </x-button>
