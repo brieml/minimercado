@@ -19,6 +19,9 @@
                 <td>{{ $proveedor->telefono ?? '—' }}</td>
                 <td>
                     <div class="flex justify-end gap-2">
+                        <x-button :href="route('proveedores.show', $proveedor->id)" variant="secondary" size="sm">
+                            Ver
+                        </x-button>
                         <x-button :href="route('proveedores.edit', $proveedor->id)" variant="warning" size="sm">
                             Editar
                         </x-button>

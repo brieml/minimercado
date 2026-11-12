@@ -6,7 +6,7 @@
     <x-page-header title="Crear Proveedor" subtitle="Registra un nuevo proveedor del minimercado" />
 
     <x-card class="max-w-2xl">
-        <form action="{{ route('proveedores.store') }}" method="POST">
+        <form action="{{ route('proveedores.store') }}" method="POST" novalidate>
             @csrf
 
             @include('proveedores.form')

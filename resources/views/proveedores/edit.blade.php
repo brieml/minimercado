@@ -6,7 +6,7 @@
     <x-page-header title="Editar Proveedor" subtitle="Modifica los datos del proveedor seleccionado" />
 
     <x-card class="max-w-2xl">
-        <form action="{{ route('proveedores.update', $proveedor) }}" method="POST">
+        <form action="{{ route('proveedores.update', $proveedor) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 
